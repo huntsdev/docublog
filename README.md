@@ -140,6 +140,8 @@ You can use **Markdown formatting** inside a callout.
 
 Put images and other downloadable assets in `public/` and reference them with root-relative paths, such as `![Diagram description](/images/diagram.png)`.
 
+Markdown images open in a dimmed image viewer when clicked. Click the image or backdrop, use the close button, or press Escape to return to the article. Images linked to other pages keep their normal navigation behavior.
+
 ## Search and personalization
 
 The build automatically generates `/search-index.json` from published content. Search covers titles, descriptions, full article and project text, section names, and blog tags. Results show the content directory, for example `Projects > Active Directory PowerShell Toolkit`. MiniSearch loads only when the search dialog first opens; no external search service is required.

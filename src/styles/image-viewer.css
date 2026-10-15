@@ -1,0 +1,38 @@
+@layer reset, base, layout, components, prose, responsive;
+
+@layer components {
+  body.image-viewer-open { overflow: hidden; }
+  .image-viewer { position: fixed; inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 64px 48px 40px; border: 0; background: transparent; color: #f1f3f6; overflow: hidden; }
+  .image-viewer[open] { display: grid; place-items: center; animation: image-viewer-enter .2s ease-out; }
+  .image-viewer::backdrop { background: rgb(7 10 14 / 88%); backdrop-filter: blur(8px); animation: image-backdrop-enter .2s ease-out; }
+  .image-viewer-close { position: absolute; top: 16px; right: 20px; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid rgb(255 255 255 / 18%); border-radius: 50%; background: rgb(255 255 255 / 8%); color: #fff; transition: background .15s; }
+  .image-viewer-close:hover { background: rgb(255 255 255 / 18%); }
+  .image-viewer-figure { display: flex; flex-direction: column; align-items: center; gap: 18px; min-width: 0; max-width: 100%; margin: 0; }
+  .image-viewer-image-button { display: block; padding: 0; border: 0; background: transparent; line-height: 0; cursor: zoom-out; }
+  .image-viewer-image { display: block; width: auto; height: auto; max-width: calc(100vw - 96px); max-height: calc(100dvh - 180px); object-fit: contain; border-radius: 8px; box-shadow: 0 20px 80px rgb(0 0 0 / 35%); }
+  .image-viewer-caption { max-width: min(800px, 100%); font-size: 12px; line-height: 1.6; text-align: center; color: #c2c8d1; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+  .image-viewer-status { color: #c2c8d1; font-size: 13px; text-align: center; }
+  .image-viewer :focus-visible { outline: 2px solid #83d8ef; outline-offset: 5px; }
+  @keyframes image-viewer-enter { from { opacity: 0; transform: scale(.97); } to { opacity: 1; transform: scale(1); } }
+  @keyframes image-backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+}
+
+@layer prose {
+  .prose .markdown-image-trigger { position: relative; display: block; width: fit-content; max-width: 100%; margin: 24px auto; padding: 0; border: 0; border-radius: 8px; background: transparent; line-height: 0; cursor: zoom-in; }
+  .prose .markdown-image-trigger img { margin: 0; }
+  .image-zoom-hint { position: absolute; right: 10px; bottom: 10px; display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid rgb(255 255 255 / 20%); border-radius: 8px; background: rgb(7 10 14 / 75%); color: #fff; opacity: 0; transform: translateY(3px); transition: opacity .15s, transform .15s; pointer-events: none; }
+  .markdown-image-trigger:hover .image-zoom-hint, .markdown-image-trigger:focus-visible .image-zoom-hint { opacity: 1; transform: none; }
+}
+
+@layer responsive {
+  @media (max-width: 700px) {
+    .image-viewer { padding: 72px 16px 32px; }
+    .image-viewer-close { right: 16px; }
+    .image-viewer-image { max-width: calc(100vw - 32px); }
+  }
+  @media (hover: none) { .image-zoom-hint { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .image-viewer[open], .image-viewer::backdrop { animation: none; }
+    .image-zoom-hint, .topic-toggle svg { transition: none; }
+  }
+}

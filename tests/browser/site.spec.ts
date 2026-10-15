@@ -39,8 +39,18 @@ test('theme choices persist across reloads and react to the system preference', 
 test('topic filtering and sort preserve the selected posts', async ({ page }) => {
   await page.goto('/blog/');
   const allPosts = await page.locator('[data-post-wrapper]:visible').count();
+  const topics = page.locator('.topic-options .topic-button:visible');
+  const toggle = page.locator('[data-topic-toggle]');
+  await expect(topics).toHaveCount(5);
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+  expect(await topics.count()).toBeGreaterThan(5);
   await page.locator('.topic-button').filter({ hasText: /^Homelab$/ }).click();
   await expect(page).toHaveURL(/tag=Homelab/);
+  await toggle.click();
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  await expect(topics).toHaveCount(5);
+  await expect(page.locator('.topic-button.selected')).toBeVisible();
   const visible = page.locator('[data-post-wrapper]:visible');
   const total = await visible.count();
   expect(total).toBeGreaterThan(0);
@@ -53,8 +63,67 @@ test('topic filtering and sort preserve the selected posts', async ({ page }) =>
   expect(dates).toEqual([...dates].sort((a, b) => a - b));
   await page.reload();
   await expect(page.locator('.topic-button.selected')).toHaveText('Homelab');
+  await expect(page.locator('.topic-button.selected')).toBeVisible();
   await page.getByRole('button', { name: 'All posts', exact: true }).click();
   await expect(page.locator('[data-post-wrapper]:visible')).toHaveCount(allPosts);
+});
+
+test('Markdown images enlarge and close with image, backdrop, or keyboard', async ({ page }) => {
+  await page.goto('/blog/homelab/');
+  const trigger = page.getByRole('button', { name: 'Enlarge image: Homelab', exact: true });
+  await trigger.click();
+  const viewer = page.getByRole('dialog', { name: 'Image viewer' });
+  await expect(viewer).toBeVisible();
+  await expect(viewer.getByRole('img', { name: 'Homelab', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Close image viewer' })).toBeFocused();
+  expect(await page.evaluate(() => getComputedStyle(document.body).overflow)).toBe('hidden');
+  await page.keyboard.press('Escape');
+  await expect(viewer).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await viewer.getByRole('button', { name: 'Close enlarged image' }).click();
+  await expect(viewer).not.toBeVisible();
+  await trigger.click();
+  await page.mouse.click(12, 120);
+  await expect(viewer).not.toBeVisible();
+  await expect(trigger).toBeFocused();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await trigger.click();
+  const image = viewer.getByRole('img');
+  await expect(image).toBeVisible();
+  const bounds = await image.boundingBox();
+  expect(bounds!.x).toBeGreaterThanOrEqual(16);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(374);
+  await viewer.getByRole('button', { name: 'Close image viewer' }).click();
+  await expect(viewer).not.toBeVisible();
+});
+
+test('content and outline stay centered beside the sidebar on large screens', async ({ page }) => {
+  await page.goto('/blog/tailscale/');
+  for (const width of [2543, 1920, 1280, 1024, 768, 390]) {
+    await page.setViewportSize({ width, height: 1000 });
+    const layout = await page.evaluate(() => {
+      const main = document.querySelector('.main-shell')!.getBoundingClientRect();
+      const sidebar = document.querySelector('.sidebar')!.getBoundingClientRect();
+      return { left: main.left, right: main.right, sidebarRight: sidebar.right, viewport: innerWidth, overflow: document.documentElement.scrollWidth > innerWidth };
+    });
+    const availableLeft = width > 700 ? layout.sidebarRight : 0;
+    expect(Math.abs((layout.left - availableLeft) - (layout.viewport - layout.right))).toBeLessThanOrEqual(1);
+    expect(layout.overflow).toBe(false);
+    await expect(page.locator('.article-header')).toBeVisible();
+    if (width > 1080) await expect(page.getByRole('complementary', { name: 'On this page' })).toBeVisible();
+  }
+});
+
+test('missing pages show the supplied 404 image and recovery links', async ({ page }) => {
+  const response = await page.goto('/this-page-does-not-exist/');
+  expect(response?.status()).toBe(404);
+  const image = page.locator('.not-found-image');
+  await expect(image).toBeVisible();
+  expect(await image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+  await expect(page.getByRole('link', { name: 'Back to overview' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Search the site', exact: true })).toBeVisible();
 });
 
 test('article rendering, assets, social URLs, and counters are present in the correct sections', async ({ page, request }) => {

@@ -8,26 +8,15 @@ const posts = await getPosts();
 const projects = await getProjects();
 ---
 <SiteLayout home>
-  <section class="home-hero" id="overview">
-    <div class="eyebrow"><span class="eyebrow-line"></span> LEARN. BUILD. DOCUMENT.</div>
-    <h1>A working collection of<br /><span>things worth knowing.</span></h1>
-    <p class="hero-description">Notes on engineering, security, and the things learned along the way. Practical guides, small experiments, and ideas worth keeping.</p>
-    <div class="hero-signature"><span class="terminal-prompt">~</span><span>Less noise. More knowledge.</span><span class="blinking-cursor"></span></div>
-  </section>
-  <div class="explore-grid">
-    <a href="/blog/" class="explore-card"><span class="explore-icon"><Icon name="file" size={19} /></span><div><h2>Blog posts <Icon name="right" size={14} /></h2><p>Notes, guides & deep dives</p></div></a>
-    <a href="/projects/" class="explore-card"><span class="explore-icon"><Icon name="folder" size={19} /></span><div><h2>Projects <Icon name="right" size={14} /></h2><p>Things being put together</p></div></a>
-    <a href="/about/" class="explore-card"><span class="explore-icon"><Icon name="user" size={19} /></span><div><h2>About <Icon name="right" size={14} /></h2><p>Behind the keyboard</p></div></a>
-  </div>
   <section class="writing-section" id="latest-writing">
     <div class="section-heading"><h2><span class="section-marker"></span>Latest writing</h2><a href="/blog/">View all posts <Icon name="right" size={13} /></a></div>
-    <p class="section-description">Fresh notes from the workbench.</p>
+    <p class="section-description">the latest and greatest</p>
     <div class="post-list">{posts.slice(0, 4).map(post => <PostRow post={post} />)}</div>
   </section>
   <section id="selected-projects" class="projects-section">
     <div class="section-heading"><h2><span class="section-marker"></span>Selected projects</h2><a href="/projects/">All projects <Icon name="right" size={13} /></a></div>
-    <p class="section-description">Small tools. Useful experiments. Open notebooks.</p>
+    <p class="section-description"></p>
     <div class="project-grid">{projects.slice(0, 2).map(project => <ProjectCard project={project} compact />)}</div>
   </section>
-  <div class="search-callout"><span class="search-callout-icon"><Icon name="search" size={24} /></span><div><h3>Follow your curiosity.</h3><p>Search every post, project, and note in one place.</p></div><button class="button-secondary" data-open-search>Find something <span>⌘ K</span></button></div>
+  <div class="search-callout"><span class="search-callout-icon"><Icon name="search" size={24} /></span><div><h3>Looking for anything specific?</h3><p>Use the search to find topics that may interest you.</p></div><button class="button-secondary" data-open-search>Find something <span>⌘ K</span></button></div>
 </SiteLayout>

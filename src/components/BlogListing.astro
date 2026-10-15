@@ -6,9 +6,16 @@ interface Props { tag?: string; }
 const { tag } = Astro.props;
 const posts = await getPosts();
 const tags = [...new Set(posts.flatMap(post => post.data.tags))].sort();
+const topicLimit = 5;
+const initialTopics = tags.slice(0, topicLimit);
+if (tag && tags.includes(tag) && !initialTopics.includes(tag)) initialTopics.splice(topicLimit - 1, 1, tag);
 ---
-<div data-blog-listing data-initial-tag={tag || ''}>
-  <div class="topic-filters" aria-label="Filter by topic"><button class:list={['topic-button', { selected: !tag }]} data-tag="" aria-pressed={!tag}>All posts</button>{tags.map(topic => <button class:list={['topic-button', { selected: tag === topic }]} data-tag={topic} aria-pressed={tag === topic}><Icon name="hash" size={12} />{topic}</button>)}</div>
+<div data-blog-listing data-initial-tag={tag || ''} data-topic-limit={topicLimit}>
+  <div class="topic-filters" aria-label="Filter by topic">
+    <button class:list={['topic-button', { selected: !tag }]} data-tag="" aria-pressed={!tag}>All posts</button>
+    <div id="blog-topic-options" class="topic-options">{tags.map(topic => <button class:list={['topic-button', { selected: tag === topic }]} data-tag={topic} aria-pressed={tag === topic} hidden={!initialTopics.includes(topic)}><Icon name="hash" size={12} />{topic}</button>)}</div>
+    {tags.length > topicLimit && <button type="button" class="topic-toggle" data-topic-toggle aria-expanded="false" aria-controls="blog-topic-options"><span data-topic-toggle-label>Show all topics</span><span class="topic-extra-count" data-topic-extra-count aria-hidden="true">+{tags.length - topicLimit}</span><Icon name="chevron" size={13} /></button>}
+  </div>
   <div class="list-toolbar"><span data-result-count aria-live="polite">{tag ? posts.filter(p => p.data.tags.includes(tag)).length : posts.length} posts</span><label class="sort-control">Sort by <select data-sort aria-label="Sort blog posts"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select><Icon name="chevron" size={12} /></label></div>
   <div class="post-list" data-post-list>{posts.map(post => <div hidden={!!tag && !post.data.tags.includes(tag)} data-post-wrapper><PostRow post={post} /></div>)}</div>
   <div class="list-empty" data-filter-empty hidden><Icon name="search" size={26} /><h2>No notes in this topic yet.</h2><p>Try another topic to find something new.</p><button class="button-secondary" data-clear-filters>Show all posts</button></div>

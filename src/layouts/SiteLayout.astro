@@ -23,7 +23,7 @@ interface Props {
   articleTags?: string[];
   author?: string;
 }
-const { title = 'A working collection of things worth knowing', description = 'Practical notes on engineering, security, and building things. A personal knowledge base by hunts.dev.', section = 'Overview', headings = [], home = false, noindex = false, image, article = false, publishedAt, articleTags = [], author = DEFAULT_AUTHOR } = Astro.props;
+const { title = 'Ryan Hunt | hunts.dev', description = 'Practical notes on engineering, security, and building things. A personal knowledge base by hunts.dev.', section = 'Overview', headings = [], home = false, noindex = false, image, article = false, publishedAt, articleTags = [], author = DEFAULT_AUTHOR } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const ownerProfile = getAuthorProfile(DEFAULT_AUTHOR);
 const authorProfile = getAuthorProfile(author);

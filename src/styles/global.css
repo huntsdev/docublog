@@ -263,13 +263,25 @@
   .prose blockquote { margin: 23px 0; border-left: 3px solid var(--accent); padding: 12px 18px; border-radius: 0 5px 5px 0; background: var(--accent-soft); color: var(--secondary); font-size: 14px; }
   .prose blockquote p { margin: 0; }
   .prose code { font-family: 'JetBrains Mono Variable', monospace; font-size: .83em; background: var(--surface-hover); border: 1px solid var(--border); border-radius: 4px; padding: 2px 5px; color: var(--text); }
-  .prose pre { overflow-x: auto; margin: 22px 0; padding: 43px 20px 18px; border: 1px solid var(--border); border-radius: 7px; line-height: 1.8; font-size: 12px; position: relative; }
+  .prose pre { overflow-x: auto; margin: 22px 0; padding: 18px 20px; border: 1px solid var(--border); border-radius: 8px; line-height: 1.8; font-size: 12px; }
   .prose pre code { padding: 0; border: 0; background: transparent; font-size: inherit; color: inherit; }
-  .prose pre .code-language { position: absolute; left: 20px; top: 12px; color: var(--muted); font: 9px 'Geist Variable', sans-serif; text-transform: uppercase; letter-spacing: .8px; }
-  .prose pre .code-copy { position: absolute; right: 10px; top: 7px; display: flex; align-items: center; gap: 5px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--muted); padding: 4px 7px; font: 9px 'Geist Variable', sans-serif; }
-  .prose pre .code-copy:hover { color: var(--accent); }
+  .code-block { margin: 22px 0; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; }
+  .code-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; padding: 6px 10px 6px 16px; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .code-language { display: inline-flex; align-items: center; gap: 8px; min-width: 0; color: var(--secondary); font-family: 'Geist Variable', sans-serif; font-size: 11px; font-weight: 520; line-height: 1.5; }
+  .code-language-icon { display: grid; place-items: center; flex-shrink: 0; width: 23px; height: 23px; border: 1px solid var(--border); border-radius: 5px; background: var(--bg); color: var(--muted); }
+  .code-copy-mount { display: grid; place-items: center; flex-shrink: 0; min-width: 32px; min-height: 32px; }
+  .animate-copy-button { position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 32px; height: 32px; padding: 0; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--muted); transition: color .15s, background .15s, border-color .15s; }
+  .animate-copy-button:hover { color: var(--text); background: var(--surface-hover); border-color: var(--border); }
+  .animate-copy-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .animate-copy-button:disabled { opacity: .5; cursor: default; }
+  .animate-copy-button[data-state='copied'] { color: var(--accent); background: var(--accent-soft); }
+  .animate-copy-button[data-state='error'] { color: #c04e4e; }
+  .animate-copy-button [data-slot='copy-button-icon'] { display: flex; align-items: center; justify-content: center; pointer-events: none; }
+  .animate-copy-button svg { width: 15px; height: 15px; flex-shrink: 0; }
+  .copy-button-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .prose .code-block > pre { margin: 0; border: 0; border-radius: 0; }
+  @media (pointer: coarse) { .animate-copy-button { width: 40px; height: 40px; } }
   :root[data-theme='dark'] .astro-code, :root[data-theme='dark'] .astro-code span { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
-  :root[data-theme='dark'] .astro-code .code-copy, :root[data-theme='dark'] .astro-code .code-language { color: var(--muted) !important; background: var(--bg) !important; }
   .table-scroll { overflow-x: auto; margin: 22px 0; border: 1px solid var(--border); border-radius: 7px; }
   .prose table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.75; margin: 22px 0; }
   .table-scroll > table { margin: 0; }

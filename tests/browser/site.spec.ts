@@ -60,7 +60,7 @@ test('article rendering, assets, social URLs, and counters are present in the co
   await expect(page.locator('.prose pre code').first()).toBeVisible();
   await expect(page.locator('.table-scroll')).toHaveCount(1);
   await expect(page.locator('.outline-nav a').first()).toBeVisible();
-  await expect(page.locator('.code-copy').first()).toHaveText('Copy');
+  await expect(page.locator('.code-toolbar').getByRole('button', { name: 'Copy code' }).first()).toBeVisible();
   await expect(page.locator('[data-track-view="true"] [data-view-count]')).toHaveText(/\d[\d,]* views?/);
   await page.goto('/projects/active-directory-powershell-toolkit/');
   await expect(page.locator('[data-view-slug]')).toHaveCount(0);
@@ -93,4 +93,45 @@ test('mobile navigation is usable without horizontal overflow', async ({ page })
   await expect(page).toHaveURL(/\/projects\/$/);
   const overflows = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   expect(overflows).toBe(false);
+});
+
+test('code header labels and Animate UI copy feedback work in both themes', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/blog/powershell-patterns/');
+  const block = page.locator('.code-block').first();
+  const button = block.getByRole('button', { name: 'Copy code' });
+  await expect(block.locator('.code-language')).toHaveText('PowerShell');
+  await expect(block.locator('pre button')).toHaveCount(0);
+  const content = await block.locator('pre code').textContent();
+  await button.click();
+  await expect(block.locator('[data-slot="copy-button"]')).toHaveAttribute('data-state', 'copied');
+  expect((await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n')).toBe(content);
+  await expect(block.getByRole('button', { name: 'Copy code' })).toBeVisible({ timeout: 5000 });
+
+  await page.getByRole('button', { name: /theme|appearance/i }).click();
+  await page.getByRole('menuitemradio', { name: 'Dark' }).click();
+  await block.getByRole('button', { name: 'Copy code' }).click();
+  await expect(block.locator('[data-slot="copy-button"]')).toHaveAttribute('data-state', 'copied');
+  expect((await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n')).toBe(content);
+});
+
+test('copy button reports denied clipboard access and remains usable with reduced motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/blog/powershell-patterns/');
+  const block = page.locator('.code-block').first();
+  await expect(block.getByRole('button', { name: 'Copy code' })).toBeVisible();
+  await page.evaluate(() => {
+    Object.defineProperty(navigator.clipboard, 'writeText', {
+      configurable: true,
+      value: () => Promise.reject(new DOMException('Permission denied', 'NotAllowedError')),
+    });
+    Object.defineProperty(document, 'execCommand', { configurable: true, value: () => false });
+  });
+  await block.getByRole('button', { name: 'Copy code' }).click();
+  await expect(block.locator('[data-slot="copy-button"]')).toHaveAttribute('data-state', 'error');
+  await expect(block.getByRole('status')).toContainText(/couldn.t|failed|unable/i);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const bounds = await block.locator('[data-slot="copy-button"]').boundingBox();
+  expect(bounds!.width).toBeGreaterThanOrEqual(32);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(390);
 });

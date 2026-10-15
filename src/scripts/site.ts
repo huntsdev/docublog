@@ -59,22 +59,46 @@ document.querySelectorAll<HTMLTableElement>('.prose table').forEach(table => {
 async function copyText(text: string) {
   try { await navigator.clipboard.writeText(text); return true; } catch { return false; }
 }
+const languageNames: Record<string, string> = {
+  powershell: 'PowerShell', ps1: 'PowerShell', ps: 'PowerShell', pwsh: 'PowerShell',
+  javascript: 'JavaScript', js: 'JavaScript', jsx: 'JSX', typescript: 'TypeScript', ts: 'TypeScript', tsx: 'TSX',
+  bash: 'Bash', sh: 'Shell', shell: 'Shell', shellscript: 'Shell', shellsession: 'Terminal', console: 'Terminal',
+  python: 'Python', py: 'Python', json: 'JSON', jsonc: 'JSONC', yaml: 'YAML', yml: 'YAML', toml: 'TOML',
+  html: 'HTML', css: 'CSS', scss: 'SCSS', sql: 'SQL', md: 'Markdown', markdown: 'Markdown', mdx: 'MDX',
+  csharp: 'C#', cs: 'C#', cpp: 'C++', c: 'C', go: 'Go', rust: 'Rust', rs: 'Rust', java: 'Java',
+  dockerfile: 'Dockerfile', docker: 'Dockerfile', hcl: 'HCL', terraform: 'Terraform', diff: 'Diff',
+  text: 'Plain text', txt: 'Plain text', plaintext: 'Plain text',
+};
+const codeControls: { mount: HTMLElement; content: string }[] = [];
 document.querySelectorAll<HTMLElement>('.prose pre').forEach(pre => {
   const code = pre.querySelector('code');
-  if (!code) return;
+  if (!code || pre.parentElement?.classList.contains('code-block')) return;
+  const identifier = (pre.dataset.language || [...code.classList].find(value => value.startsWith('language-'))?.slice(9) || '').trim();
+  const block = document.createElement('div');
+  block.className = 'code-block';
+  const toolbar = document.createElement('div');
+  toolbar.className = 'code-toolbar';
   const language = document.createElement('span');
   language.className = 'code-language';
-  language.textContent = pre.dataset.language || code.className.replace('language-', '') || 'Code';
-  pre.prepend(language);
-  const button = document.createElement('button');
-  button.type = 'button'; button.className = 'code-copy'; button.textContent = 'Copy'; button.setAttribute('aria-label', 'Copy code');
-  button.addEventListener('click', async () => {
-    const success = await copyText(code.textContent || '');
-    button.textContent = success ? 'Copied!' : 'Copy failed';
-    setTimeout(() => { button.textContent = 'Copy'; }, 1800);
-  });
-  pre.prepend(button);
+  const languageIcon = document.createElement('span');
+  languageIcon.className = 'code-language-icon';
+  languageIcon.setAttribute('aria-hidden', 'true');
+  languageIcon.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m4 7 5 5-5 5M12 18h8" /></svg>';
+  const label = document.createElement('span');
+  label.textContent = languageNames[identifier.toLowerCase()] || identifier || 'Code';
+  language.append(languageIcon, label);
+  const mount = document.createElement('div');
+  mount.className = 'code-copy-mount';
+  toolbar.append(language, mount);
+  pre.before(block);
+  block.append(toolbar, pre);
+  codeControls.push({ mount, content: code.textContent || '' });
 });
+if (codeControls.length) {
+  void import('../components/CodeBlockControls').then(({ mountCodeCopyButton }) => {
+    codeControls.forEach(({ mount, content }) => mountCodeCopyButton(mount, content));
+  });
+}
 document.querySelectorAll<HTMLButtonElement>('[data-copy-link]').forEach(button => button.addEventListener('click', async () => {
   const success = await copyText(location.href);
   const label = button.querySelector('span');

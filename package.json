@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.13.0" },
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
     "build": "astro build && node scripts/build-worker.mjs",
@@ -15,28 +17,29 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
-    "astro": "latest",
-    "@astrojs/react": "latest",
     "@astrojs/mdx": "latest",
+    "@astrojs/react": "latest",
     "@astrojs/sitemap": "latest",
     "@fontsource-variable/geist": "latest",
     "@fontsource-variable/jetbrains-mono": "latest",
     "@radix-ui/react-dialog": "latest",
     "@radix-ui/react-dropdown-menu": "latest",
-    "react": "latest",
-    "react-dom": "latest",
+    "astro": "latest",
+    "drizzle-orm": "latest",
     "lucide-react": "latest",
     "minisearch": "latest",
-    "drizzle-orm": "latest"
+    "motion": "^14.2.0",
+    "react": "latest",
+    "react-dom": "latest"
   },
   "devDependencies": {
     "@astrojs/check": "latest",
+    "@playwright/test": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "typescript": "latest",
     "drizzle-kit": "latest",
     "esbuild": "latest",
-    "wrangler": "latest",
-    "@playwright/test": "latest"
+    "typescript": "latest",
+    "wrangler": "latest"
   }
 }

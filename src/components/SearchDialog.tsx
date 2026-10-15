@@ -8,6 +8,7 @@ type SearchEntry = {
   id: string;
   title: string;
   description: string;
+  author?: string;
   body: string;
   tags: string[];
   section: Section;
@@ -25,6 +26,7 @@ function isSearchEntry(value: unknown): value is SearchEntry {
   const entry = value as Record<string, unknown>;
   return ['id', 'title', 'description', 'body', 'url', 'breadcrumb'].every((key) => typeof entry[key] === 'string')
     && typeof entry.url === 'string' && entry.url.startsWith('/') && !entry.url.startsWith('//')
+    && (entry.author === undefined || typeof entry.author === 'string')
     && ['Blog Posts', 'Projects', 'About', 'Explore'].includes(String(entry.section))
     && Array.isArray(entry.tags) && entry.tags.every((tag) => typeof tag === 'string');
 }
@@ -84,8 +86,8 @@ export default function SearchDialog() {
         if (!Array.isArray(data) || !data.every(isSearchEntry)) throw new Error('Invalid search index');
         const uniqueEntries = [...new Map(data.map((entry) => [entry.id, entry])).values()];
         const engine = new MiniSearch<IndexedEntry>({
-          fields: ['title', 'description', 'body', 'tags', 'section'],
-          searchOptions: { boost: { title: 8, tags: 5, description: 2, section: 1.5 }, prefix: true, fuzzy: 0.2 },
+          fields: ['title', 'description', 'author', 'body', 'tags', 'section'],
+          searchOptions: { boost: { title: 8, tags: 5, author: 3, description: 2, section: 1.5 }, prefix: true, fuzzy: 0.2 },
         });
         engine.addAll(uniqueEntries.map((entry) => ({ ...entry, tags: entry.tags.join(' ') })));
         engineRef.current = engine;
@@ -155,7 +157,7 @@ export default function SearchDialog() {
       <Dialog.Trigger asChild>
         <button className="search-trigger" type="button" aria-label="Search all posts, projects, and pages">
           <Search size={16} aria-hidden="true" />
-          <span>Search documentation…</span>
+          <span>Search anything...</span>
           <kbd>{shortcut}</kbd>
         </button>
       </Dialog.Trigger>

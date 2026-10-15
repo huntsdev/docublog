@@ -1,8 +1,9 @@
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
+import { DEFAULT_AUTHOR } from './lib/authors';
 
-const base = { title: z.string(), description: z.string() };
+const base = { title: z.string(), description: z.string(), author: z.string().trim().min(1).default(DEFAULT_AUTHOR) };
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
   schema: z.object({

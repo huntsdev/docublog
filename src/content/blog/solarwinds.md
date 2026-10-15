@@ -1,5 +1,6 @@
 ---
 title: Analysis of Solarwinds Breach, 2020
+author: Ryan Hunt
 description: A comprehensive analysis of the 2020 SolarWinds breach detailing APT29's supply chain compromise, attack phases, and response efforts through the lens of the MITRE ATT&CK framework.
 date: 2025-02-04
 tags:

@@ -1,5 +1,6 @@
 ---
 title: Detection Notebook
+author: Ryan Hunt
 description: A starter collection of defensive hypotheses, test observations, and analyst-facing explanations.
 status: In progress
 stack: [Markdown, YAML, Git]

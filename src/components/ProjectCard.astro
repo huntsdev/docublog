@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import Icon from './Icon.astro';
+import Author from './Author.astro';
 interface Props { project: CollectionEntry<'projects'>; compact?: boolean; }
 const { project, compact = false } = Astro.props;
 const icon = project.id.includes('directory') ? 'terminal' : project.id.includes('homelab') ? 'layers' : 'shield';
@@ -9,4 +10,5 @@ const icon = project.id.includes('directory') ? 'terminal' : project.id.includes
   <div class="project-card-top"><span class="project-icon"><Icon name={icon} size={21} /></span><span class:list={['project-status', { 'status-active': project.data.status === 'Active' }]}><i></i>{project.data.status}</span><Icon name="arrow" size={16} /></div>
   <h3>{project.data.title}</h3><p>{project.data.description}</p>
   <div class="project-stack">{project.data.stack.slice(0, 3).map(item => <span>{item}</span>)}</div>
+  <Author name={project.data.author} compact />
 </a>

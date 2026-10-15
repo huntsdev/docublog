@@ -9,6 +9,7 @@ import ThemeToggle from '../components/ThemeToggle';
 import Sidebar from '../components/Sidebar.astro';
 import TableOfContents from '../components/TableOfContents.astro';
 import Icon from '../components/Icon.astro';
+import { DEFAULT_AUTHOR, getAuthorProfile } from '../lib/authors';
 interface Props {
   title?: string;
   description?: string;
@@ -20,10 +21,19 @@ interface Props {
   article?: boolean;
   publishedAt?: Date;
   articleTags?: string[];
+  author?: string;
 }
-const { title = 'A working collection of things worth knowing', description = 'Practical notes on engineering, security, and building things. A personal knowledge base by hunts.dev.', section = 'Overview', headings = [], home = false, noindex = false, image, article = false, publishedAt, articleTags = [] } = Astro.props;
+const { title = 'A working collection of things worth knowing', description = 'Practical notes on engineering, security, and building things. A personal knowledge base by hunts.dev.', section = 'Overview', headings = [], home = false, noindex = false, image, article = false, publishedAt, articleTags = [], author = DEFAULT_AUTHOR } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const socialImage = new URL(image || '/android-chrome-512x512.png', Astro.site);
+const ownerProfile = getAuthorProfile(DEFAULT_AUTHOR);
+const authorProfile = getAuthorProfile(author);
+const socialImage = new URL(image || ownerProfile.image!, Astro.site);
+const articleMetadata = article ? JSON.stringify({
+  '@context': 'https://schema.org', '@type': 'BlogPosting',
+  headline: title, description, image: socialImage.href, mainEntityOfPage: canonical.href,
+  datePublished: publishedAt?.toISOString(),
+  author: { '@type': 'Person', name: author, url: authorProfile.url && new URL(authorProfile.url, Astro.site).href, image: authorProfile.image && new URL(authorProfile.image, Astro.site).href },
+}).replace(/</g, '\\u003c') : undefined;
 ---
 <!doctype html>
 <html lang="en" data-theme="light">
@@ -32,6 +42,7 @@ const socialImage = new URL(image || '/android-chrome-512x512.png', Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} · hunts.dev</title>
     <meta name="description" content={description} />
+    <meta name="author" content={author} />
     <meta name="theme-color" content="#f4f4f0" />
     <meta property="og:title" content={`${title} · hunts.dev`} />
     <meta property="og:description" content={description} />
@@ -43,13 +54,14 @@ const socialImage = new URL(image || '/android-chrome-512x512.png', Astro.site);
     <meta name="twitter:image" content={socialImage} />
     {article && publishedAt && <meta property="article:published_time" content={publishedAt.toISOString()} />}
     {article && articleTags.map(tag => <meta property="article:tag" content={tag} />)}
+    {articleMetadata && <script type="application/ld+json" set:html={articleMetadata} />}
     {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href="/favicon.ico?v=ryan-hunt" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=ryan-hunt" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=ryan-hunt" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=ryan-hunt" />
+    <link rel="manifest" href="/site.webmanifest?v=ryan-hunt" />
     <link rel="alternate" type="application/rss+xml" title="hunts.dev Blog" href="/rss.xml" />
     <script is:inline>
       (() => {
@@ -64,8 +76,8 @@ const socialImage = new URL(image || '/android-chrome-512x512.png', Astro.site);
   <body id="top">
     <a href="#main-content" class="skip-link">Skip to content</a>
     <header class="site-header">
-      <div class="header-brand"><button class="icon-button menu-trigger" data-open-menu aria-label="Open navigation" aria-controls="site-sidebar" aria-expanded="false"><Icon name="menu" size={20} /></button><a href="/" aria-label="hunts.dev home"><img src="/android-chrome-192x192.png" alt="" width="36" height="36" /><span>hunts<span class="brand-dot">.</span>dev</span></a></div>
-      <div class="header-content"><span class="header-caption">A personal knowledge base<span class="caption-dot">.</span></span><div class="header-actions"><SearchDialog client:load /><span class="header-divider"></span><ThemeToggle client:load /><a href="https://github.com/huntsdev" class="header-github icon-button" aria-label="huntsdev on GitHub" target="_blank" rel="noopener noreferrer"><Icon name="github" size={20} /></a></div></div>
+      <div class="header-brand"><button class="icon-button menu-trigger" data-open-menu aria-label="Open navigation" aria-controls="site-sidebar" aria-expanded="false"><Icon name="menu" size={20} /></button><a href="/" aria-label="hunts.dev home"><img src={ownerProfile.avatar} alt="" width="36" height="36" /><span>hunts<span class="brand-dot">.</span>dev</span></a></div>
+      <div class="header-content"><span class="header-caption">my personal knowledge base<span class="caption-dot">.</span></span><div class="header-actions"><SearchDialog client:load /><span class="header-divider"></span><ThemeToggle client:load /><a href="https://github.com/huntsdev" class="header-github icon-button" aria-label="huntsdev on GitHub" target="_blank" rel="noopener noreferrer"><Icon name="github" size={20} /></a></div></div>
     </header>
     <Sidebar />
     <div class="main-shell">

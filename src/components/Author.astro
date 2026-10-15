@@ -1,0 +1,10 @@
+---
+import { getAuthorProfile } from '../lib/authors';
+interface Props { name: string; compact?: boolean; }
+const { name, compact = false } = Astro.props;
+const profile = getAuthorProfile(name);
+---
+<span class:list={['author-byline', { 'author-compact': compact }]} data-author={name}>
+  {profile.avatar && <img class="author-avatar" src={profile.avatar} alt="" width={compact ? 20 : 26} height={compact ? 20 : 26} loading="lazy" decoding="async" />}
+  <span>{name}</span>
+</span>

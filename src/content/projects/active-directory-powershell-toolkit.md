@@ -1,5 +1,6 @@
 ---
 title: Active Directory PowerShell Toolkit
+author: Ryan Hunt
 description: A starter concept for clear, read-only directory inventory scripts and practical reporting.
 status: In progress
 stack: [PowerShell, Active Directory, CSV]

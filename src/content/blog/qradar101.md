@@ -1,5 +1,6 @@
 ---
 title: CyberDefenders QRadar 101
+author: Ryan Hunt
 description: A comprehensive writeup of the QRadar 101 challenge from CyberDefenders, covering SIEM fundamentals and log analysis techniques.
 date: 2025-10-05
 tags:

@@ -59,6 +59,7 @@ Create `src/content/blog/my-first-post.md`:
 ```md
 ---
 title: "My first field note"
+author: "Ryan Hunt"
 description: "A practical note about building and learning."
 date: 2026-10-14
 tags: [PowerShell, Automation]
@@ -76,6 +77,8 @@ tables, lists, and images as needed.
 
 An optional `image` accepts a root-relative image path or HTTP(S) URL. It appears as a compact article thumbnail and supplies the social sharing image. Publication dates and tags are also included in article sharing metadata.
 
+Blog posts, projects, and About content accept `author`, which defaults to `Ryan Hunt`. That exact name displays Ryan’s portrait in article and listing bylines; other names display as text. Author profiles are configured in `src/lib/authors.ts`, with portrait assets in `public/images/`. Author names are also searchable and included in page and RSS metadata.
+
 ### Projects
 
 Create `src/content/projects/my-project.md`:
@@ -83,6 +86,7 @@ Create `src/content/projects/my-project.md`:
 ```md
 ---
 title: "Active Directory PowerShell Toolkit"
+author: "Ryan Hunt"
 description: "A collection of reusable PowerShell helpers."
 status: "In progress"
 stack: [PowerShell, Active Directory]

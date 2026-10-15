@@ -3,12 +3,14 @@ import { getEntry, render } from 'astro:content';
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import Icon from '../../components/Icon.astro';
 import { socialLinks } from '../../lib/content';
+import { getAuthorProfile, DEFAULT_AUTHOR } from '../../lib/authors';
 const about = await getEntry('about', 'index');
 if (!about) throw new Error('About content is missing');
 const { Content, headings } = await render(about);
+const owner = getAuthorProfile(DEFAULT_AUTHOR);
 ---
-<SiteLayout title="About" section="About" description={about.data.description} headings={headings}>
-  <div class="page-heading about-heading"><img src="/android-chrome-192x192.png" width="68" height="68" alt="hunts.dev emblem" /><div class="eyebrow"><span class="eyebrow-line"></span> BEHIND THE KEYBOARD</div><h1>Hey, I’m Ryan<span class="title-dot">.</span></h1><p>A space for curiosity, technical notes, and things in progress.</p></div>
+<SiteLayout title="About" section="About" description={about.data.description} headings={headings} author={about.data.author}>
+  <div class="page-heading about-heading"><img src={owner.image} srcset={`${owner.avatar} 192w, ${owner.image} 512w`} sizes="(max-width: 450px) 80px, 96px" width="96" height="96" alt="Portrait of Ryan Hunt" /><div class="eyebrow"><span class="eyebrow-line"></span> BEHIND THE KEYBOARD</div><h1>Hey, I’m Ryan<span class="title-dot">.</span></h1><p>A space for curiosity, technical notes, and things in progress.</p></div>
   <div class="prose"><Content /></div>
   <div class="about-socials">{socialLinks.map(link => <a class="button-secondary" href={link.href} target="_blank" rel="noopener noreferrer"><Icon name={link.icon} size={16} />{link.title}<Icon name="arrow" size={13} /></a>)}</div>
 </SiteLayout>

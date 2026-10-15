@@ -1,5 +1,6 @@
 ---
 title: SecretPictures - HackTheBox Sherlock "Easy"
+author: Ryan Hunt
 description: An in-depth writeup of the SecretPictures HackTheBox sherlock.
 date: 2025-11-13
 tags:

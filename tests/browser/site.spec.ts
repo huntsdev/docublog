@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('search finds a project, a misspelled title, and words inside article content', async ({ page }) => {
   await page.goto('/');
+  await expect(page.locator('astro-island[component-url*="SearchDialog"]')).not.toHaveAttribute('ssr', '');
   await page.getByRole('button', { name: 'Search all posts, projects, and pages' }).click();
   const input = page.getByRole('combobox', { name: 'Search the site' });
   await input.fill('Active Directory PowerShell Toolkit');

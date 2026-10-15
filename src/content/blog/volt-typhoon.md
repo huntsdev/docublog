@@ -1,5 +1,6 @@
 ---
 title: Volt Typhoon Lab
+author: Ryan Hunt
 description: Comprehensive write-up to TryHackMe's Volt Typhoon Lab.
 date: 2025-12-12
 tags:

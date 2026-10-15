@@ -1,5 +1,6 @@
 ---
 title: Previous - HackTheBox Machine "Medium"
+author: Ryan Hunt
 description: An in-depth writeup of HackTheBox's Previous Linux Machine.
 date: 2025-11-13
 tags:

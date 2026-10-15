@@ -3,11 +3,12 @@ import type { CollectionEntry } from 'astro:content';
 import { formatDate, readingTime, tagSlug } from '../lib/content';
 import Icon from './Icon.astro';
 import PostViews from './PostViews.astro';
+import Author from './Author.astro';
 interface Props { post: CollectionEntry<'blog'>; }
 const { post } = Astro.props;
 ---
 <article class="post-row" data-post data-tags={JSON.stringify(post.data.tags)} data-date={post.data.date.valueOf()}>
   <div class="post-row-heading"><a class="post-title" href={`/blog/${post.id}/`}>{post.data.title}</a><Icon name="arrow" size={18} /></div>
   <p>{post.data.description}</p>
-  <div class="post-meta"><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span class="meta-dot">·</span><span>{readingTime(post.body)} min read</span><span class="meta-dot">·</span><PostViews slug={post.id} /><div class="post-tags">{post.data.tags.slice(0, 2).map(tag => <a class="tag" href={`/blog/tags/${tagSlug(tag)}/`}>{tag}</a>)}</div></div>
+  <div class="post-meta"><Author name={post.data.author} compact /><span class="meta-dot">·</span><time datetime={post.data.date.toISOString()}>{formatDate(post.data.date)}</time><span class="meta-dot">·</span><span>{readingTime(post.body)} min read</span><span class="meta-dot">·</span><PostViews slug={post.id} /><div class="post-tags">{post.data.tags.slice(0, 2).map(tag => <a class="tag" href={`/blog/tags/${tagSlug(tag)}/`}>{tag}</a>)}</div></div>
 </article>

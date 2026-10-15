@@ -1,5 +1,6 @@
 ---
 title: Phishing Unfolding
+author: Ryan Hunt
 description: Analysis of TryHackMe SOC Simulator regarding a phishing incident.
 date: 2026-04-21
 tags:

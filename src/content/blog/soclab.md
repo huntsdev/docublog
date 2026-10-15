@@ -1,5 +1,6 @@
 ---
 title: Building a Cloud-Based SIEM Home Lab with Azure and Microsoft Sentinel
+author: Ryan Hunt
 description: A comprehensive writeup of my virtualized SIEM/SOC lab.
 date: 2025-10-17
 tags:

@@ -1,5 +1,6 @@
 ---
 title: Vulnerable Active Directory - Homelab
+author: Ryan Hunt
 description: An in-depth writeup of setting up my homelab.
 date: 2025-10-22
 tags:

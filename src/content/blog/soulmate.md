@@ -1,5 +1,6 @@
 ---
 title: Soulmate Write-Up
+author: Ryan Hunt
 description: A comprehensive writeup of the HackTheBox Soulmate machine.
 date: 2025-10-19
 tags:

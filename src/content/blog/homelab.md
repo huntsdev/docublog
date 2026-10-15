@@ -1,5 +1,6 @@
 ---
 title: Current State of my Homelab
+author: Ryan Hunt
 description: An in-depth writeup of setting up my homelab.
 date: 2026-03-10
 tags:

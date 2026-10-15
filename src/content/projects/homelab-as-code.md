@@ -1,5 +1,6 @@
 ---
 title: Homelab as Code
+author: Ryan Hunt
 description: A starter blueprint for a small, reproducible lab with configuration and recovery notes in one place.
 status: In progress
 stack: [Linux, Docker, Git]

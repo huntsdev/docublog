@@ -1,5 +1,6 @@
 ---
 title: Setting up Tailscale VPN In My Home Network
+author: Ryan Hunt
 description: In-depth guide to my experience setting up Tailscale within my home network
 date: 2026-06-11
 tags:

@@ -1,5 +1,6 @@
 ---
 title: Meerkat - HackTheBox Sherlock
+author: Ryan Hunt
 description: An in-depth writeup of the Meerkat HackTheBox sherlock.
 date: 2025-11-11
 tags:

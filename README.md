@@ -167,6 +167,16 @@ npm run build
 
 The site is portable to Cloudflare Workers with D1. `wrangler.json` defines the Worker, static assets, and the `DB` binding. `scripts/build-worker.mjs` bundles the Worker into `dist/server` and writes the deployment configuration alongside it. Static output is in `dist/client`.
 
+### Vercel
+
+The checked-in `vercel.json` selects Astro, runs `npm run build:vercel`, and publishes `dist/client`. This output directory is required: the homepage is `dist/client/index.html`, not `dist/index.html`.
+
+In Vercel, set the Root Directory to the folder containing `package.json` and `vercel.json` (the repository root for this project). Set the `SITE_URL` environment variable to your production origin, such as `https://hunts.dev`, for correct canonical links, sitemap, and RSS. Push these configuration changes and redeploy; the file supplies the build command and output directory.
+
+This deploys the static site. The existing `/api/views` endpoint runs in a Cloudflare Worker with D1 and is not deployed by Vercel. Blog view counts show an unavailable indicator until a compatible view-count backend is configured for the Vercel deployment.
+
+### Cloudflare Workers
+
 For your own Cloudflare deployment, create a D1 database and update its name and ID in `wrangler.json`. Apply the migrations to that database, then build and deploy:
 
 ```sh

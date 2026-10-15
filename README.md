@@ -43,7 +43,10 @@ npm run preview
 | `npm run preview` | Run the built Worker, static assets, and local D1 database |
 | `npm run check` | Check Astro and TypeScript files |
 | `npm test` | Run the view-count API tests |
+| `npm run test:e2e` | Run browser checks against a preview at port 4322 |
 | `npm run db:generate` | Generate a migration after changing the database schema |
+
+For browser checks, start `npm run preview -- --port 4322` first. Install Chromium with `npx playwright install chromium` if it is not already available. Set `PLAYWRIGHT_BASE_URL` to test a different preview URL.
 
 ## Write content
 
@@ -109,7 +112,9 @@ import Embed from '../../components/mdx/Embed.astro';
 import LinkCard from '../../components/mdx/LinkCard.astro';
 
 <Callout variant="tip" title="Keep a useful note">
-  You can use **Markdown formatting** inside a callout.
+
+You can use **Markdown formatting** inside a callout.
+
 </Callout>
 
 <LinkCard

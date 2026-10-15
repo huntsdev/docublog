@@ -15,17 +15,17 @@
 
 @layer base {
   :root {
-    --bg: #ffffff;
-    --surface: #f8f9fb;
-    --surface-hover: #eff2f5;
-    --sidebar-bg: #fafbfc;
-    --text: #20252e;
-    --muted: #727985;
-    --secondary: #535d6c;
-    --border: #e7e9ee;
-    --accent: #087e9e;
-    --accent-soft: #eaf7fb;
-    --accent-strong: #0696bd;
+    --bg: #f4f4f0;
+    --surface: #eeefeb;
+    --surface-hover: #e6e8e3;
+    --sidebar-bg: #eff0ec;
+    --text: #30363e;
+    --muted: #616970;
+    --secondary: #535d65;
+    --border: #daddd6;
+    --accent: #117286;
+    --accent-soft: #e3eef0;
+    --accent-strong: #147f95;
     --radius: 8px;
     --sidebar-width: 262px;
     --header-height: 72px;
@@ -281,6 +281,7 @@
   .copy-button-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .prose .code-block > pre { margin: 0; border: 0; border-radius: 0; }
   @media (pointer: coarse) { .animate-copy-button { width: 40px; height: 40px; } }
+  :root:not([data-theme='dark']) .astro-code { background-color: var(--bg) !important; }
   :root[data-theme='dark'] .astro-code, :root[data-theme='dark'] .astro-code span { color: var(--shiki-dark) !important; background-color: var(--shiki-dark-bg) !important; }
   .table-scroll { overflow-x: auto; margin: 22px 0; border: 1px solid var(--border); border-radius: 7px; }
   .prose table { width: 100%; border-collapse: collapse; font-size: 13px; line-height: 1.75; margin: 22px 0; }

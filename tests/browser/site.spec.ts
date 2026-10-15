@@ -21,11 +21,13 @@ test('search finds a project, a misspelled title, and words inside article conte
 test('theme choices persist across reloads and react to the system preference', async ({ page }) => {
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
+  await expect(page.locator('astro-island[component-url*="ThemeToggle"]')).not.toHaveAttribute('ssr', '');
   await page.getByRole('button', { name: /theme|appearance/i }).click();
   await page.getByRole('menuitemradio', { name: 'Dark' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.reload();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await expect(page.locator('astro-island[component-url*="ThemeToggle"]')).not.toHaveAttribute('ssr', '');
   await page.getByRole('button', { name: /theme|appearance/i }).click();
   await page.getByRole('menuitemradio', { name: 'System' }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
@@ -35,12 +37,13 @@ test('theme choices persist across reloads and react to the system preference', 
 
 test('topic filtering and sort preserve the selected posts', async ({ page }) => {
   await page.goto('/blog/');
+  const allPosts = await page.locator('[data-post-wrapper]:visible').count();
   await page.locator('.topic-button').filter({ hasText: /^PowerShell$/ }).click();
   await expect(page).toHaveURL(/tag=PowerShell/);
   const visible = page.locator('[data-post-wrapper]:visible');
   const total = await visible.count();
   expect(total).toBeGreaterThan(0);
-  expect(total).toBeLessThan(5);
+  expect(total).toBeLessThan(allPosts);
   for (const wrapper of await visible.all()) {
     expect(JSON.parse(await wrapper.locator('[data-post]').getAttribute('data-tags') || '[]')).toContain('PowerShell');
   }
@@ -50,7 +53,7 @@ test('topic filtering and sort preserve the selected posts', async ({ page }) =>
   await page.reload();
   await expect(page.locator('.topic-button.selected')).toHaveText('PowerShell');
   await page.getByRole('button', { name: 'All posts', exact: true }).click();
-  await expect(page.locator('[data-post-wrapper]:visible')).toHaveCount(5);
+  await expect(page.locator('[data-post-wrapper]:visible')).toHaveCount(allPosts);
 });
 
 test('article rendering, assets, social URLs, and counters are present in the correct sections', async ({ page, request }) => {

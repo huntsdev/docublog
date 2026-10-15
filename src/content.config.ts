@@ -11,6 +11,11 @@ const blog = defineCollection({
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
+    image: z.string().refine(value => {
+      if (/^\/(?!\/)/.test(value)) return true;
+      try { return ['http:', 'https:'].includes(new URL(value).protocol); }
+      catch { return false; }
+    }, 'Use a root-relative image path or an HTTP(S) image URL.').optional(),
   }),
 });
 const projects = defineCollection({

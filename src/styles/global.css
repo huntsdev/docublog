@@ -216,6 +216,10 @@
   .article-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
   .article-tags .tag { color: var(--accent); background: var(--accent-soft); border-color: transparent; font-size: 9px; padding: 3px 7px; }
   .article-header h1 { font-size: clamp(28px, 2.65vw, 39px); line-height: 1.22; font-weight: 620; letter-spacing: -1.25px; margin-bottom: 17px; }
+  .article-title-row { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 17px; }
+  .article-title-row > h1 { flex: 1; min-width: 0; margin-bottom: 0; }
+  .article-thumbnail { flex-shrink: 0; width: 72px; height: 72px; object-fit: cover; border: 1px solid var(--border); border-radius: 8px; }
+  @media (max-width: 450px) { .article-title-row { gap: 12px; } .article-thumbnail { width: 52px; height: 52px; } }
   .article-header > .project-status { margin-bottom: 16px; }
   .article-description { color: var(--secondary); font-size: 13px; line-height: 1.9; }
   .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 22px; color: var(--muted); font-size: 10px; }

@@ -74,6 +74,8 @@ tables, lists, and images as needed.
 
 `title`, `description`, and `date` are required. Tags default to an empty list; `featured` and `draft` default to `false`. Draft posts are excluded from published pages, navigation, search, and feeds. Posts are ordered by date, newest first. Tags and view counters apply only to blog posts.
 
+An optional `image` accepts a root-relative image path or HTTP(S) URL. It appears as a compact article thumbnail and supplies the social sharing image. Publication dates and tags are also included in article sharing metadata.
+
 ### Projects
 
 Create `src/content/projects/my-project.md`:

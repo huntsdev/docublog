@@ -1,0 +1,37 @@
+---
+import Icon from './Icon.astro';
+import { getPosts, getProjects, socialLinks } from '../lib/content';
+const posts = await getPosts();
+const projects = await getProjects();
+const current = Astro.url.pathname;
+---
+<aside class="sidebar" id="site-sidebar" aria-label="Main navigation" tabindex="-1">
+  <div class="mobile-sidebar-heading"><span>Explore hunts.dev</span><button class="icon-button" data-close-menu aria-label="Close navigation"><Icon name="close" /></button></div>
+  <nav class="sidebar-nav">
+    <a class:list={['nav-item', 'overview-link', { active: current === '/' }]} href="/" aria-current={current === '/' ? 'page' : undefined}><Icon name="home" /><span>Overview</span></a>
+    <div class="nav-section">
+      <details open>
+        <summary class="nav-section-title"><span><Icon name="file" /> Blog Posts</span><Icon name="chevron" size={14} /></summary>
+        <div class="nav-section-body">
+          <a class:list={['nav-item', { active: current === '/blog/' }]} href="/blog/" aria-current={current === '/blog/' ? 'page' : undefined}><span>All posts</span></a>
+          {posts.map(post => <a href={`/blog/${post.id}/`} title={post.data.title} class:list={['nav-item', 'child-item', { active: current === `/blog/${post.id}/` }]} aria-current={current === `/blog/${post.id}/` ? 'page' : undefined}>{post.data.title}</a>)}
+        </div>
+      </details>
+    </div>
+    <div class="nav-section">
+      <details open>
+        <summary class="nav-section-title"><span><Icon name="folder" /> Projects</span><Icon name="chevron" size={14} /></summary>
+        <div class="nav-section-body">
+          <a class:list={['nav-item', { active: current === '/projects/' }]} href="/projects/" aria-current={current === '/projects/' ? 'page' : undefined}>All projects</a>
+          {projects.map(project => <a href={`/projects/${project.id}/`} title={project.data.title} class:list={['nav-item', 'child-item', { active: current === `/projects/${project.id}/` }]} aria-current={current === `/projects/${project.id}/` ? 'page' : undefined}>{project.data.title}</a>)}
+        </div>
+      </details>
+    </div>
+    <a class:list={['nav-item', 'about-link', { active: current === '/about/' }]} href="/about/" aria-current={current === '/about/' ? 'page' : undefined}><Icon name="user" /><span>About</span></a>
+    <div class="sidebar-divider"></div>
+    <div class="nav-label">ON THE WEB</div>
+    {socialLinks.map(link => <a class="nav-item social-link" href={link.href} target="_blank" rel="noopener noreferrer"><Icon name={link.icon} size={17} /><span>{link.title}</span><Icon name="arrow" size={13} /></a>)}
+  </nav>
+  <div class="sidebar-footer"><div class="sidebar-note"><span class="status-dot"></span> A growing collection</div><p>Stay curious. Keep building.</p><a href="/rss.xml"><Icon name="rss" size={13} /> Subscribe via RSS <Icon name="arrow" size={12} /></a></div>
+</aside>
+<button class="sidebar-scrim" data-close-menu aria-label="Close navigation" tabindex="-1"></button>

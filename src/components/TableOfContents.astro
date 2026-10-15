@@ -1,0 +1,11 @@
+---
+interface Props { headings?: { depth?: number; slug: string; text: string }[]; home?: boolean; }
+const { headings = [], home = false } = Astro.props;
+const entries = home ? [{slug:'overview',text:'Overview'},{slug:'latest-writing',text:'Latest writing'},{slug:'selected-projects',text:'Selected projects'}] : headings.filter(h => (h.depth || 2) <= 3);
+import Icon from './Icon.astro';
+---
+<aside class="page-outline" aria-label="On this page">
+  {entries.length > 0 && <><div class="outline-label">On this page</div><nav class="outline-nav">{entries.map((heading, i) => <a class:list={[{ 'outline-nested': heading.depth === 3, 'is-active': i === 0 }]} href={`#${heading.slug}`}>{heading.text}</a>)}</nav></>}
+  {home && <div class="start-here"><div class="outline-label">Start here</div><a href="/blog/active-directory-enumeration/"><Icon name="book" size={15} /> Explore a guide</a><a href="/projects/"><Icon name="code" size={15} /> Browse projects</a><a href="/about/"><Icon name="user" size={15} /> Meet the author</a></div>}
+  <a class="outline-top" href="#top"><Icon name="right" size={12} /> Back to top</a>
+</aside>

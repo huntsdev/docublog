@@ -1,0 +1,83 @@
+---
+title: Rich content authoring examples
+description: A copyable example of callouts, link cards, and responsive embeds in an MDX post.
+date: 2026-10-01
+tags: [Writing, Engineering]
+draft: true
+---
+
+import Callout from '../src/components/mdx/Callout.astro';
+import Embed from '../src/components/mdx/Embed.astro';
+import LinkCard from '../src/components/mdx/LinkCard.astro';
+
+{/* This file lives outside the published content. When copying it to
+    src/content/blog/rich-content.mdx, change the imports above to
+    '../../components/mdx/Callout.astro' (and the matching component names).
+    Set draft: false when the post is ready to publish. */}
+
+This is **illustrative starter content**, showing authoring features rather than a personal achievement. Most posts can stay in plain `.md`. Use `.mdx` when a post needs a reusable component.
+
+## Callouts
+
+<Callout title="A little context">
+
+Callouts accept normal Markdown, including **emphasis**, [links](/blog/), and short lists. Their labels and icons communicate the purpose without relying only on color.
+
+</Callout>
+
+<Callout variant="tip" title="Keep the question close">
+
+Write down the problem before collecting commands and output. Your future self will have a clearer place to start.
+
+</Callout>
+
+<Callout variant="warning" title="Review before publishing">
+
+Replace example identifiers and remove secrets or private infrastructure details from any public notes.
+
+</Callout>
+
+## Related reading
+
+<LinkCard
+  href="/projects/active-directory-powershell-toolkit/"
+  title="Active Directory PowerShell Toolkit"
+  description="Read the starter project outline and its proposed reporting workflow."
+/>
+
+<LinkCard
+  href="https://docs.astro.build/en/guides/integrations-guide/mdx/"
+  title="Astro MDX documentation"
+  description="Learn how Markdown and imported components work together."
+/>
+
+## Responsive embeds
+
+Copy the provider's **embed URL**, rather than a normal watch or sharing link. A descriptive title is required; captions are optional. Unsupported providers and invalid URLs produce a clear build error.
+
+<Embed
+  src="https://www.youtube-nocookie.com/embed/M7lc1UVf-VE"
+  title="Google for Developers: YouTube embedded player customization"
+  caption="A public demonstration of the YouTube embedded player."
+/>
+
+The same component also accepts Vimeo, CodePen, and Spotify embed URLs:
+
+```mdx
+<Embed
+  src="https://player.vimeo.com/video/76979871"
+  title="Vimeo player demonstration"
+/>
+
+<Embed
+  src="https://codepen.io/chriscoyier/embed/gfdDu"
+  title="CodePen embedded example"
+/>
+
+<Embed
+  src="https://open.spotify.com/embed/track/0Lr4kGOYn9l83EjuK6cZFQ"
+  title="Spotify audio player example"
+/>
+```
+
+These examples reference third-party content. Choose content you want to share and replace each title with a useful description of that specific item.

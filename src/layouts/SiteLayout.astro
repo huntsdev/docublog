@@ -1,0 +1,72 @@
+---
+import '@fontsource-variable/geist';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import '../styles/search.css';
+import '../styles/theme.css';
+import SearchDialog from '../components/SearchDialog';
+import ThemeToggle from '../components/ThemeToggle';
+import Sidebar from '../components/Sidebar.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import Icon from '../components/Icon.astro';
+interface Props {
+  title?: string;
+  description?: string;
+  section?: string;
+  headings?: { depth?: number; slug: string; text: string }[];
+  home?: boolean;
+  noindex?: boolean;
+}
+const { title = 'A working collection of things worth knowing', description = 'Practical notes on engineering, security, and building things. A personal knowledge base by hunts.dev.', section = 'Overview', headings = [], home = false, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · hunts.dev</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fafbfc" />
+    <meta property="og:title" content={`${title} · hunts.dev`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={new URL('/android-chrome-512x512.png', Astro.site)} />
+    <meta name="twitter:card" content="summary" />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title="hunts.dev Blog" href="/rss.xml" />
+    <script is:inline>
+      (() => {
+        let theme = 'system';
+        try { theme = localStorage.getItem('hunts-theme') || 'system'; } catch {}
+        const dark = theme === 'dark' || (theme === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.classList.toggle('dark', dark);
+      })();
+    </script>
+  </head>
+  <body id="top">
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <header class="site-header">
+      <div class="header-brand"><button class="icon-button menu-trigger" data-open-menu aria-label="Open navigation" aria-controls="site-sidebar" aria-expanded="false"><Icon name="menu" size={20} /></button><a href="/" aria-label="hunts.dev home"><img src="/android-chrome-192x192.png" alt="" width="36" height="36" /><span>hunts<span class="brand-dot">.</span>dev</span></a></div>
+      <div class="header-content"><span class="header-caption">A personal knowledge base<span class="caption-dot">.</span></span><div class="header-actions"><SearchDialog client:load /><span class="header-divider"></span><ThemeToggle client:load /><a href="https://github.com/huntsdev" class="header-github icon-button" aria-label="huntsdev on GitHub" target="_blank" rel="noopener noreferrer"><Icon name="github" size={20} /></a></div></div>
+    </header>
+    <Sidebar />
+    <div class="main-shell">
+      <main class:list={['page-content', { 'home-content': home }]} id="main-content">
+        <div class="breadcrumb"><a href="/"><Icon name="home" size={14} /></a><Icon name="right" size={12} />{section !== 'Overview' && Astro.url.pathname !== `/${section === 'Blog Posts' ? 'blog' : section.toLowerCase()}/` ? <><a href={`/${section === 'Blog Posts' ? 'blog' : section.toLowerCase()}/`}>{section}</a><Icon name="right" size={12} /><span>{title}</span></> : <span>{section}</span>}</div>
+        <slot />
+        <footer class="page-footer"><span>© {new Date().getFullYear()} hunts.dev</span><span>Built with curiosity<span class="footer-dot">.</span></span></footer>
+      </main>
+      <TableOfContents headings={headings} home={home} />
+    </div>
+    <script src="../scripts/site.ts"></script>
+  </body>
+</html>

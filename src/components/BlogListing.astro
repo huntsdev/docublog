@@ -1,0 +1,15 @@
+---
+import { getPosts } from '../lib/content';
+import PostRow from './PostRow.astro';
+import Icon from './Icon.astro';
+interface Props { tag?: string; }
+const { tag } = Astro.props;
+const posts = await getPosts();
+const tags = [...new Set(posts.flatMap(post => post.data.tags))].sort();
+---
+<div data-blog-listing data-initial-tag={tag || ''}>
+  <div class="topic-filters" aria-label="Filter by topic"><button class:list={['topic-button', { selected: !tag }]} data-tag="" aria-pressed={!tag}>All posts</button>{tags.map(topic => <button class:list={['topic-button', { selected: tag === topic }]} data-tag={topic} aria-pressed={tag === topic}><Icon name="hash" size={12} />{topic}</button>)}</div>
+  <div class="list-toolbar"><span data-result-count aria-live="polite">{tag ? posts.filter(p => p.data.tags.includes(tag)).length : posts.length} posts</span><label class="sort-control">Sort by <select data-sort aria-label="Sort blog posts"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select><Icon name="chevron" size={12} /></label></div>
+  <div class="post-list" data-post-list>{posts.map(post => <div hidden={!!tag && !post.data.tags.includes(tag)} data-post-wrapper><PostRow post={post} /></div>)}</div>
+  <div class="list-empty" data-filter-empty hidden><Icon name="search" size={26} /><h2>No notes in this topic yet.</h2><p>Try another topic to find something new.</p><button class="button-secondary" data-clear-filters>Show all posts</button></div>
+</div>

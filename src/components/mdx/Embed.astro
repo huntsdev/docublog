@@ -1,0 +1,67 @@
+---
+interface Props {
+  /** An HTTPS embed URL from an explicitly supported provider. */
+  src: string;
+  /** A meaningful description of the embedded content for screen readers. */
+  title: string;
+  caption?: string;
+}
+
+const { src, title, caption } = Astro.props;
+const supported = 'Use a YouTube /embed/ URL, player.vimeo.com/video/ URL, codepen.io/USER/embed/PEN URL, or open.spotify.com/embed/ URL.';
+
+if (typeof title !== 'string' || !title.trim()) {
+  throw new Error('[Embed] A non-empty, descriptive title is required for accessibility.');
+}
+if (typeof src !== 'string' || !src.trim()) {
+  throw new Error(`[Embed] A src URL is required. ${supported}`);
+}
+
+let url: URL;
+try {
+  url = new URL(src);
+} catch {
+  throw new Error(`[Embed] Invalid src URL. ${supported}`);
+}
+if (url.protocol !== 'https:' || url.username || url.password || url.port || url.hash) {
+  throw new Error(`[Embed] src must use HTTPS without credentials, a custom port, or a fragment. ${supported}`);
+}
+
+const host = url.hostname.toLowerCase();
+let provider: 'youtube' | 'vimeo' | 'codepen' | 'spotify';
+if (['youtube.com', 'www.youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com'].includes(host) && /^\/embed\/[A-Za-z0-9_-]{11}\/?$/.test(url.pathname)) {
+  provider = 'youtube';
+} else if (host === 'player.vimeo.com' && /^\/video\/\d+\/?$/.test(url.pathname)) {
+  provider = 'vimeo';
+} else if (host === 'codepen.io' && /^\/[A-Za-z0-9_-]+\/embed\/[A-Za-z0-9_-]+\/?$/.test(url.pathname)) {
+  provider = 'codepen';
+} else if (host === 'open.spotify.com' && /^\/embed\/(track|album|artist|playlist|episode|show)\/[A-Za-z0-9]+\/?$/.test(url.pathname)) {
+  provider = 'spotify';
+} else {
+  throw new Error(`[Embed] Unsupported provider or embed path: ${host}${url.pathname}. ${supported}`);
+}
+
+const compactAudio = provider === 'spotify' && /^\/embed\/(track|episode)\//.test(url.pathname);
+const permissions = provider === 'spotify'
+  ? 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture'
+  : provider === 'codepen'
+    ? 'fullscreen'
+    : 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+---
+
+<figure class="embed" data-provider={provider}>
+  <div class:list={['embed-frame', { 'embed-audio': provider === 'spotify', 'embed-audio-compact': compactAudio }]}>
+    <iframe src={url.toString()} title={title.trim()} loading="lazy" allow={permissions} allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .embed { margin: 1.8rem 0; }
+  .embed-frame { position: relative; overflow: hidden; width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+  .embed[data-provider="codepen"] .embed-frame { aspect-ratio: 16 / 10; min-height: 300px; }
+  .embed-audio { aspect-ratio: auto; height: 352px; }
+  .embed-audio-compact { height: 152px; }
+  .embed-frame iframe { display: block; width: 100%; height: 100%; border: 0; }
+  figcaption { margin-top: .65rem; color: var(--muted); font-size: .8rem; line-height: 1.6; text-align: center; }
+</style>

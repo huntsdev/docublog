@@ -1,0 +1,29 @@
+---
+import SiteLayout from './SiteLayout.astro';
+import Icon from '../components/Icon.astro';
+import PostViews from '../components/PostViews.astro';
+import { formatDate, tagSlug } from '../lib/content';
+interface Props {
+  title: string; description: string; section: string;
+  headings: { depth: number; slug: string; text: string }[];
+  date?: Date; tags?: string[]; readingTime?: number; slug?: string;
+  status?: string; stack?: string[]; repository?: string; demo?: string;
+  previous?: { title: string; url: string }; next?: { title: string; url: string };
+}
+const { title, description, section, headings, date, tags = [], readingTime, slug, status, stack = [], repository, demo, previous, next } = Astro.props;
+---
+<SiteLayout title={title} description={description} section={section} headings={headings}>
+  <article class="article-content">
+    <header class="article-header">
+      {tags.length > 0 && <div class="article-tags">{tags.map(tag => <a href={`/blog/tags/${tagSlug(tag)}/`} class="tag">{tag}</a>)}</div>}
+      {status && <span class:list={['project-status', { 'status-active': status === 'Active' }]}><i></i>{status}</span>}
+      <h1>{title}</h1><p class="article-description">{description}</p>
+      {date && <div class="article-meta"><span><Icon name="calendar" size={14} /><time datetime={date.toISOString()}>{formatDate(date)}</time></span><span><Icon name="clock" size={14} />{readingTime} min read</span>{slug && <PostViews slug={slug} track />}</div>}
+      {stack.length > 0 && <div class="project-stack">{stack.map(item => <span>{item}</span>)}</div>}
+      {(repository || demo) && <div class="project-actions">{repository && <a href={repository} class="button-secondary" target="_blank" rel="noopener noreferrer"><Icon name="github" size={16} />Source code<Icon name="arrow" size={14} /></a>}{demo && <a href={demo} class="button-secondary" target="_blank" rel="noopener noreferrer">Live demo<Icon name="arrow" size={14} /></a>}</div>}
+    </header>
+    <div class="prose"><slot /></div>
+    <div class="article-end"><span><Icon name="terminal" size={15} /> End of note</span><button class="copy-link-button" data-copy-link><Icon name="link" size={14} /><span>Copy page link</span></button></div>
+    {(previous || next) && <nav class="article-pagination" aria-label="More notes">{previous ? <a href={previous.url}><span>← Previous</span><strong>{previous.title}</strong></a> : <div></div>}{next && <a href={next.url}><span>Next →</span><strong>{next.title}</strong></a>}</nav>}
+  </article>
+</SiteLayout>

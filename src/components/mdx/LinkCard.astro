@@ -1,0 +1,50 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description?: string;
+}
+
+const { href, title, description } = Astro.props;
+if (typeof title !== 'string' || !title.trim()) {
+  throw new Error('[LinkCard] A non-empty title is required.');
+}
+if (typeof href !== 'string' || !href.trim() || /[\u0000-\u0020\\]/.test(href)) {
+  throw new Error('[LinkCard] href must be a root-relative internal path or a valid HTTPS URL without whitespace.');
+}
+const internal = (href.startsWith('/') && !href.startsWith('//')) || (href.startsWith('#') && href.length > 1);
+let external = false;
+if (!internal) {
+  try {
+    const url = new URL(href);
+    external = url.protocol === 'https:' && !url.username && !url.password;
+  } catch {
+    // The descriptive error below handles malformed and unsupported URLs.
+  }
+  if (!external) {
+    throw new Error('[LinkCard] href must be a root-relative internal path, an anchor, or an HTTPS URL without credentials.');
+  }
+}
+---
+
+<a class="link-card" href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined}>
+  <span class="link-card-content">
+    <span class="link-card-title">{title}{external && <span class="visually-hidden"> (opens in a new tab)</span>}</span>
+    {description && <span class="link-card-description">{description}</span>}
+  </span>
+  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    {external ? <path d="M7 17 17 7M7 7h10v10" /> : <path d="m9 5 7 7-7 7" />}
+  </svg>
+</a>
+
+<style>
+  .link-card { display: flex; align-items: center; justify-content: space-between; gap: 1.1rem; margin: 1.3rem 0; padding: 1.1rem 1.2rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); text-decoration: none; transition: border-color .15s, background .15s; }
+  .link-card:hover { border-color: var(--accent); background: var(--surface-hover); text-decoration: none; }
+  .link-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .link-card-content { display: block; min-width: 0; }
+  .link-card-title { display: block; color: var(--text); font-size: .9rem; font-weight: 600; line-height: 1.6; }
+  .link-card-description { display: block; margin-top: .25rem; color: var(--muted); font-size: .825rem; line-height: 1.7; }
+  .link-card > svg { flex-shrink: 0; color: var(--muted); }
+  .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  @media (prefers-reduced-motion: reduce) { .link-card { transition: none; } }
+</style>

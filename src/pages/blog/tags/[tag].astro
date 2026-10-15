@@ -1,0 +1,14 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import BlogListing from '../../../components/BlogListing.astro';
+import { getPosts, tagSlug } from '../../../lib/content';
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return [...new Set(posts.flatMap(post => post.data.tags))].map(tag => ({ params: { tag: tagSlug(tag) }, props: { tag } }));
+}
+const { tag } = Astro.props;
+---
+<SiteLayout title={tag} section="Blog Posts" description={`Browse all hunts.dev posts about ${tag}.`}>
+  <div class="page-heading"><div class="eyebrow"><span class="eyebrow-line"></span> EXPLORE A TOPIC</div><h1>Blog posts<span class="title-dot">.</span></h1><p>Notes, guides, and ideas. Find a topic and follow a thread.</p></div>
+  <BlogListing tag={tag} />
+</SiteLayout>

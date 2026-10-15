@@ -1,0 +1,11 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../lib/content';
+const projects = await getProjects();
+---
+<SiteLayout title="Projects" section="Projects" description="Tools, experiments, and open notebooks from hunts.dev.">
+  <div class="page-heading"><div class="eyebrow"><span class="eyebrow-line"></span> ON THE WORKBENCH</div><h1>Projects<span class="title-dot">.</span></h1><p>Useful tools and ideas taking shape.<br />A place to build, break, and learn something in the process.</p></div>
+  <div class="project-grid full-project-grid">{projects.map(project => <ProjectCard project={project} />)}</div>
+  <div class="subtle-note">These are illustrative project outlines. Each has its own notebook with context, design choices, and next steps.</div>
+</SiteLayout>

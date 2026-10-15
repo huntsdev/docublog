@@ -47,4 +47,4 @@ Tests should use controlled, authorized environments. Entries should distinguish
 
 Write one complete entry and ask another person to follow its review guidance. Use the feedback to improve the template before adding more examples.
 
-[Notes on detection engineering](/blog/detection-engineering/) describes the thinking behind this structure.
+For a practical example of collecting security telemetry, see [the SIEM home lab write-up](/blog/soclab/).

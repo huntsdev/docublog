@@ -52,4 +52,4 @@ Keep the first deployment small enough to recreate in one sitting. Prefer readab
 
 ## Next steps
 
-Choose the first experiment and record the setup from a clean host. The related note, [Building a quieter home lab](/blog/quieter-home-lab/), gives the project a simple operating principle: spend more time learning than maintaining the platform.
+Choose the first experiment and record the setup from a clean host. For related context, see [Current State of my Homelab](/blog/homelab/).

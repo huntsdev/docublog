@@ -46,4 +46,4 @@ Get-DirectoryInventory -SearchBase 'OU=Lab,DC=example,DC=test' |
 
 Define one inventory report, run it in a test directory, and compare a sample of the results with known records. Publish a real repository link here once the implementation is ready to share.
 
-The companion post, [A practical guide to Active Directory enumeration](/blog/active-directory-enumeration/), explores the documentation and review process behind the idea.
+Related writing is available in [the Active Directory topic](/blog/tags/active-directory/).

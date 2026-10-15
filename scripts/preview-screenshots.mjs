@@ -14,7 +14,7 @@ await page.waitForTimeout(400);
 await page.screenshot({ path: 'artifacts/search.png' });
 await page.keyboard.press('Escape');
 await page.evaluate(() => { localStorage.setItem('hunts-theme', 'light'); });
-await page.goto('http://127.0.0.1:4322/blog/active-directory-enumeration/', { waitUntil: 'networkidle' });
+await page.goto('http://127.0.0.1:4322/blog/previous/', { waitUntil: 'domcontentloaded' });
 await page.screenshot({ path: 'artifacts/article.png', fullPage: true });
 await page.setViewportSize({ width: 390, height: 844 });
 await page.goto('http://127.0.0.1:4322/', { waitUntil: 'networkidle' });

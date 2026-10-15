@@ -7,10 +7,10 @@ test('search finds a project, a misspelled title, and words inside article conte
   await input.fill('Active Directory PowerShell Toolkit');
   const project = page.locator('.search-result').filter({ hasText: 'Projects > Active Directory PowerShell Toolkit' });
   await expect(project).toHaveCount(1);
-  await input.fill('enumeraton');
-  await expect(page.locator('.search-result').filter({ hasText: 'A practical guide to Active Directory enumeration' })).toBeVisible();
-  await input.fill('Get-ADComputer');
-  await expect(page.locator('.search-result').filter({ hasText: 'A practical guide to Active Directory enumeration' })).toBeVisible();
+  await input.fill('Tailcale');
+  await expect(page.locator('.search-result').filter({ hasText: 'Setting up Tailscale VPN In My Home Network' })).toBeVisible();
+  await input.fill('tailnet');
+  await expect(page.locator('.search-result').filter({ hasText: 'Setting up Tailscale VPN In My Home Network' })).toBeVisible();
   await input.fill('zqxywvv123456');
   await expect(page.getByText('No results found')).toBeVisible();
   await page.keyboard.press('Escape');
@@ -38,20 +38,20 @@ test('theme choices persist across reloads and react to the system preference', 
 test('topic filtering and sort preserve the selected posts', async ({ page }) => {
   await page.goto('/blog/');
   const allPosts = await page.locator('[data-post-wrapper]:visible').count();
-  await page.locator('.topic-button').filter({ hasText: /^PowerShell$/ }).click();
-  await expect(page).toHaveURL(/tag=PowerShell/);
+  await page.locator('.topic-button').filter({ hasText: /^Homelab$/ }).click();
+  await expect(page).toHaveURL(/tag=Homelab/);
   const visible = page.locator('[data-post-wrapper]:visible');
   const total = await visible.count();
   expect(total).toBeGreaterThan(0);
   expect(total).toBeLessThan(allPosts);
   for (const wrapper of await visible.all()) {
-    expect(JSON.parse(await wrapper.locator('[data-post]').getAttribute('data-tags') || '[]')).toContain('PowerShell');
+    expect(JSON.parse(await wrapper.locator('[data-post]').getAttribute('data-tags') || '[]')).toContain('Homelab');
   }
   await page.getByLabel('Sort blog posts').selectOption('oldest');
   const dates = await visible.locator('[data-post]').evaluateAll(elements => elements.map(el => Number((el as HTMLElement).dataset.date)));
   expect(dates).toEqual([...dates].sort((a, b) => a - b));
   await page.reload();
-  await expect(page.locator('.topic-button.selected')).toHaveText('PowerShell');
+  await expect(page.locator('.topic-button.selected')).toHaveText('Homelab');
   await page.getByRole('button', { name: 'All posts', exact: true }).click();
   await expect(page.locator('[data-post-wrapper]:visible')).toHaveCount(allPosts);
 });
@@ -59,12 +59,13 @@ test('topic filtering and sort preserve the selected posts', async ({ page }) =>
 test('article rendering, assets, social URLs, and counters are present in the correct sections', async ({ page, request }) => {
   const errors: string[] = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.goto('/blog/active-directory-enumeration/');
+  await page.goto('/blog/previous/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.prose pre code').first()).toBeVisible();
-  await expect(page.locator('.table-scroll')).toHaveCount(1);
   await expect(page.locator('.outline-nav a').first()).toBeVisible();
   await expect(page.locator('.code-toolbar').getByRole('button', { name: 'Copy code' }).first()).toBeVisible();
   await expect(page.locator('[data-track-view="true"] [data-view-count]')).toHaveText(/\d[\d,]* views?/);
+  await page.goto('/blog/secretpictures/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('.table-scroll').first()).toBeVisible();
   await page.goto('/projects/active-directory-powershell-toolkit/');
   await expect(page.locator('[data-view-slug]')).toHaveCount(0);
   await expect(page.locator('.sidebar a[href="https://github.com/huntsdev"]')).toHaveCount(1);
@@ -100,10 +101,11 @@ test('mobile navigation is usable without horizontal overflow', async ({ page })
 
 test('code header labels and Animate UI copy feedback work in both themes', async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
-  await page.goto('/blog/powershell-patterns/');
+  await page.goto('/blog/previous/', { waitUntil: 'domcontentloaded' });
   const block = page.locator('.code-block').first();
   const button = block.getByRole('button', { name: 'Copy code' });
-  await expect(block.locator('.code-language')).toHaveText('PowerShell');
+  await expect(button).toBeVisible();
+  await expect(block.locator('.code-language')).toHaveText('Bash');
   await expect(block.locator('pre button')).toHaveCount(0);
   const content = await block.locator('pre code').textContent();
   await button.click();
@@ -111,6 +113,7 @@ test('code header labels and Animate UI copy feedback work in both themes', asyn
   expect((await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n')).toBe(content);
   await expect(block.getByRole('button', { name: 'Copy code' })).toBeVisible({ timeout: 5000 });
 
+  await expect(page.locator('astro-island[component-url*="ThemeToggle"]')).not.toHaveAttribute('ssr', '');
   await page.getByRole('button', { name: /theme|appearance/i }).click();
   await page.getByRole('menuitemradio', { name: 'Dark' }).click();
   await block.getByRole('button', { name: 'Copy code' }).click();
@@ -120,7 +123,7 @@ test('code header labels and Animate UI copy feedback work in both themes', asyn
 
 test('copy button reports denied clipboard access and remains usable with reduced motion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
-  await page.goto('/blog/powershell-patterns/');
+  await page.goto('/blog/previous/', { waitUntil: 'domcontentloaded' });
   const block = page.locator('.code-block').first();
   await expect(block.getByRole('button', { name: 'Copy code' })).toBeVisible();
   await page.evaluate(() => {

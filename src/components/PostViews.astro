@@ -2,14 +2,17 @@
 interface Props {
   slug: string;
   track?: boolean;
+  collection?: 'blog' | 'projects';
 }
 
-const { slug, track = false } = Astro.props;
+const { slug, track = false, collection = 'blog' } = Astro.props;
 ---
 
 <span
   class="post-views"
   data-view-slug={slug}
+  data-view-collection={collection}
+  data-view-state="loading"
   data-track-view={track ? 'true' : undefined}
   aria-label="Page views loading"
   title="Page views. Reloads within 30 minutes count once."

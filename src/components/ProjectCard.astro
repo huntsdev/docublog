@@ -2,13 +2,16 @@
 import type { CollectionEntry } from 'astro:content';
 import Icon from './Icon.astro';
 import Author from './Author.astro';
+import PostViews from './PostViews.astro';
+import { formatDate } from '../lib/content';
 interface Props { project: CollectionEntry<'projects'>; compact?: boolean; }
 const { project, compact = false } = Astro.props;
 const icon = project.id.includes('directory') ? 'terminal' : project.id.includes('homelab') ? 'layers' : 'shield';
 ---
-<a href={`/projects/${project.id}/`} class:list={['project-card', { compact }]}>
+<a href={`/projects/${project.id}/`} class:list={['project-card', { compact }]} data-listing-item data-title={project.data.title} data-date={project.data.date?.valueOf()} data-featured={String(project.data.featured)} data-status={project.data.status}>
   <div class="project-card-top"><span class="project-icon"><Icon name={icon} size={21} /></span><span class:list={['project-status', { 'status-active': project.data.status === 'Active' }]}><i></i>{project.data.status}</span><Icon name="arrow" size={16} /></div>
   <h3>{project.data.title}</h3><p>{project.data.description}</p>
   <div class="project-stack">{project.data.stack.slice(0, 3).map(item => <span>{item}</span>)}</div>
   <Author name={project.data.author} compact />
+  <div class="project-card-meta">{project.data.date && <time datetime={project.data.date.toISOString()}>{formatDate(project.data.date)}</time>}<PostViews slug={project.id} collection="projects" /></div>
 </a>

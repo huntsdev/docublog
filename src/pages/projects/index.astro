@@ -2,10 +2,20 @@
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { getProjects } from '../../lib/content';
-const projects = await getProjects();
+import SortControl from '../../components/SortControl.astro';
+import { compareListingItems } from '../../lib/listing-sort';
+const projects = (await getProjects()).sort((a, b) => compareListingItems(
+  { title: a.data.title, date: a.data.date?.valueOf() },
+  { title: b.data.title, date: b.data.date?.valueOf() }, 'newest',
+));
 ---
 <SiteLayout title="Projects" section="Projects" description="Tools, experiments, and open notebooks from hunts.dev.">
   <div class="page-heading"><div class="eyebrow"><span class="eyebrow-line"></span> ON THE WORKBENCH</div><h1>Projects<span class="title-dot">.</span></h1><p>Useful tools and ideas taking shape.<br />A place to build, break, and learn something in the process.</p></div>
-  <div class="project-grid full-project-grid">{projects.map(project => <ProjectCard project={project} />)}</div>
+  <div data-listing="projects">
+    <div class="list-toolbar"><span data-result-count aria-live="polite">{projects.length} {projects.length === 1 ? 'project' : 'projects'}</span><SortControl projects /></div>
+    <p class="sort-status" data-sort-status role="status" hidden></p>
+    <div class="project-grid full-project-grid" data-list>{projects.map(project => <ProjectCard project={project} />)}</div>
+    {projects.length === 0 && <div class="list-empty"><h2>No projects yet.</h2><p>Check back for new tools and experiments.</p></div>}
+  </div>
   <div class="subtle-note">These are illustrative project outlines. Each has its own notebook with context, design choices, and next steps.</div>
 </SiteLayout>

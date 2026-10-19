@@ -1,12 +1,12 @@
 // Adapted from Animate UI's Copy Button:
 // https://animate-ui.com/docs/components/buttons/copy
 // https://animate-ui.com/r/components-buttons-copy.json
-// Uses the upstream icon transition and button primitive with site-native CSS.
+// Uses the upstream button primitive with site-native CSS, animated labels, and a drawn checkmark.
 // Adds accessible clipboard feedback, fallback copying, timer cleanup, and reduced motion.
 // License: ../../LICENSE
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { CheckIcon, CopyIcon, XIcon } from 'lucide-react';
+import { CopyIcon, XIcon } from 'lucide-react';
 import { Button as ButtonPrimitive, type ButtonProps as ButtonPrimitiveProps } from '../../primitives/buttons/button';
 import { useControlledState } from '../../hooks/use-controlled-state';
 
@@ -114,8 +114,9 @@ function CopyButton({
   }, [onClick, isCopied, content, setIsCopied, delay]);
 
   const state = isCopied ? 'copied' : failed ? 'error' : 'idle';
-  const Icon = isCopied ? CheckIcon : failed ? XIcon : CopyIcon;
+  const Icon = failed ? XIcon : CopyIcon;
   const label = isCopied ? 'Copied!' : failed ? 'Copy failed. Try again.' : accessibleLabel;
+  const visibleLabel = isCopied ? 'Copied' : failed ? 'Retry' : 'Copy';
 
   return <ButtonPrimitive
     type="button"
@@ -129,19 +130,38 @@ function CopyButton({
     aria-label={label}
     title={state === 'idle' ? title || accessibleLabel : label}
   >
-    <AnimatePresence mode="popLayout" initial={!reducedMotion}>
-      <motion.span
-        key={state}
-        data-slot="copy-button-icon"
-        aria-hidden="true"
-        initial={reducedMotion ? false : { scale: 0, opacity: 0.4, filter: 'blur(4px)' }}
-        animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
-        exit={reducedMotion ? { opacity: 0 } : { scale: 0, opacity: 0.4, filter: 'blur(4px)' }}
-        transition={{ duration: reducedMotion ? 0 : 0.25 }}
-      >
-        <Icon size={15} strokeWidth={1.75} />
-      </motion.span>
-    </AnimatePresence>
+    <span className="copy-button-icon" aria-hidden="true">
+      <AnimatePresence initial={false}>
+        <motion.span
+          key={state}
+          data-slot="copy-button-icon"
+          initial={reducedMotion ? false : { scale: 0.6, opacity: 0, rotate: -30, filter: 'blur(3px)' }}
+          animate={{ scale: 1, opacity: 1, rotate: 0, filter: 'blur(0px)' }}
+          exit={reducedMotion ? { opacity: 0 } : { scale: 0.6, opacity: 0, rotate: 30, filter: 'blur(3px)' }}
+          transition={{ duration: reducedMotion ? 0 : 0.2 }}
+        >
+          {isCopied ? <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <motion.path
+              d="m5 12 4 4L19 6"
+              initial={reducedMotion ? false : { pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: reducedMotion ? 0 : 0.25, delay: reducedMotion ? 0 : 0.08 }}
+            />
+          </svg> : <Icon size={16} strokeWidth={1.75} />}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+    {size !== 'icon' && <span className="copy-button-label" aria-hidden="true">
+      <AnimatePresence initial={false}>
+        <motion.span
+          key={state}
+          initial={reducedMotion ? false : { y: 7, opacity: 0, filter: 'blur(2px)' }}
+          animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+          exit={reducedMotion ? { opacity: 0 } : { y: -7, opacity: 0, filter: 'blur(2px)' }}
+          transition={{ duration: reducedMotion ? 0 : 0.2 }}
+        >{visibleLabel}</motion.span>
+      </AnimatePresence>
+    </span>}
     <span className="copy-button-status" role="status" aria-live="polite" aria-atomic="true" style={visuallyHidden}>
       {isCopied ? 'Copied to clipboard.' : failed ? 'Copy failed. Try again.' : ''}
     </span>

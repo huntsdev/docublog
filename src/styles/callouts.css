@@ -1,0 +1,36 @@
+.callout {
+  --callout-color: #1d4ed8;
+  --callout-background: #eff6ff;
+  margin: 24px 0;
+  padding: 16px 18px;
+  border: 1px solid color-mix(in srgb, var(--callout-color) 24%, var(--border));
+  border-left: 3px solid var(--callout-color);
+  border-radius: 7px;
+  background: var(--callout-background);
+  color: var(--secondary);
+  font-size: 14px;
+  line-height: 1.8;
+}
+.callout[data-variant='warning'] { --callout-color: #92400e; --callout-background: #fffbeb; }
+.callout[data-variant='danger'] { --callout-color: #b91c1c; --callout-background: #fef2f2; }
+.callout[data-variant='tip'] { --callout-color: #166534; --callout-background: #f0fdf4; }
+:root[data-theme='dark'] .callout { --callout-color: #93c5fd; --callout-background: #152238; }
+:root[data-theme='dark'] .callout[data-variant='warning'] { --callout-color: #fcd34d; --callout-background: #2b2415; }
+:root[data-theme='dark'] .callout[data-variant='danger'] { --callout-color: #fca5a5; --callout-background: #301b21; }
+:root[data-theme='dark'] .callout[data-variant='tip'] { --callout-color: #86efac; --callout-background: #16291e; }
+.callout .callout-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  color: var(--callout-color);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+.callout-icon { flex-shrink: 0; width: 19px; height: 19px; }
+.callout-body > :first-child { margin-top: 0; }
+.callout-body > :last-child { margin-bottom: 0; }
+.callout .callout-body p { margin-block: 10px; }
+.callout .callout-body > :first-child { margin-top: 0; }
+.callout .callout-body > :last-child { margin-bottom: 0; }

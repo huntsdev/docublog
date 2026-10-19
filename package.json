@@ -8,9 +8,9 @@
   },
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
-    "build": "astro build && node scripts/build-worker.mjs",
+    "build": "astro build",
     "build:vercel": "astro build",
-    "preview": "wrangler dev --config dist/server/wrangler.json --local --persist-to .wrangler/state --ip 127.0.0.1",
+    "preview": "astro dev --host 127.0.0.1 --port 4322 --ignore-lock",
     "check": "astro check",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "wrangler d1 migrations apply DB --local --persist-to .wrangler/state",
@@ -18,28 +18,40 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@astrojs/markdown-satteri": "^0.4.4",
     "@astrojs/mdx": "latest",
     "@astrojs/react": "latest",
     "@astrojs/sitemap": "latest",
+    "@astrojs/vercel": "^11.0.15",
     "@fontsource-variable/geist": "latest",
     "@fontsource-variable/jetbrains-mono": "latest",
     "@radix-ui/react-dialog": "latest",
     "@radix-ui/react-dropdown-menu": "latest",
+    "@upstash/redis": "^1.39.0",
     "astro": "latest",
     "drizzle-orm": "latest",
+    "fontkit": "^2.0.4",
+    "html-to-pdfmake": "^2.5.36",
+    "jsdom": "^26.1.0",
     "lucide-react": "latest",
     "minisearch": "latest",
     "motion": "^14.2.0",
+    "pdfmake": "^0.3.12",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
     "@astrojs/check": "latest",
     "@playwright/test": "latest",
+    "@types/html-to-pdfmake": "^2.4.5",
+    "@types/jsdom": "^21.1.7",
+    "@types/pdfmake": "^0.3.3",
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "drizzle-kit": "latest",
     "esbuild": "latest",
+    "pdfjs-dist": "^6.4.299",
     "typescript": "latest",
     "wrangler": "latest"
   }

@@ -136,7 +136,7 @@ test('article rendering, assets, social URLs, and counters are present in the co
   await expect(page.locator('[data-track-view="true"] [data-view-count]')).toHaveText(/\d[\d,]* views?/);
   await page.goto('/blog/secretpictures/', { waitUntil: 'domcontentloaded' });
   await expect(page.locator('.table-scroll').first()).toBeVisible();
-  await page.goto('/projects/active-directory-powershell-toolkit/');
+  await page.goto('/about/');
   await expect(page.locator('[data-view-slug]')).toHaveCount(0);
   await expect(page.locator('.sidebar a[href="https://github.com/huntsdev"]')).toHaveCount(1);
   await expect(page.locator('.sidebar a[href="https://x.com/huntsdevv"]')).toHaveCount(1);
@@ -175,11 +175,18 @@ test('code header labels and Animate UI copy feedback work in both themes', asyn
   const block = page.locator('.code-block').first();
   const button = block.getByRole('button', { name: 'Copy code' });
   await expect(button).toBeVisible();
+  await expect(block.locator('.copy-button-label')).toHaveText('Copy');
   await expect(block.locator('.code-language')).toHaveText('Bash');
   await expect(block.locator('pre button')).toHaveCount(0);
   const content = await block.locator('pre code').textContent();
-  await button.click();
+  const initialBounds = await button.boundingBox();
+  await button.focus();
+  await page.keyboard.press('Enter');
   await expect(block.locator('[data-slot="copy-button"]')).toHaveAttribute('data-state', 'copied');
+  await expect(block.locator('.copy-button-label')).toHaveText('Copied');
+  await expect(page.locator('.code-block').nth(1).getByRole('button', { name: 'Copy code' })).toBeVisible();
+  const copiedBounds = await block.locator('[data-slot="copy-button"]').boundingBox();
+  expect(Math.abs(copiedBounds!.width - initialBounds!.width)).toBeLessThanOrEqual(1);
   expect((await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n')).toBe(content);
   await expect(block.getByRole('button', { name: 'Copy code' })).toBeVisible({ timeout: 5000 });
 
@@ -205,6 +212,7 @@ test('copy button reports denied clipboard access and remains usable with reduce
   });
   await block.getByRole('button', { name: 'Copy code' }).click();
   await expect(block.locator('[data-slot="copy-button"]')).toHaveAttribute('data-state', 'error');
+  await expect(block.locator('.copy-button-label')).toHaveText('Retry');
   await expect(block.getByRole('status')).toContainText(/couldn.t|failed|unable/i);
   await page.setViewportSize({ width: 390, height: 844 });
   const bounds = await block.locator('[data-slot="copy-button"]').boundingBox();

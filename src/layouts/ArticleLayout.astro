@@ -3,6 +3,7 @@ import SiteLayout from './SiteLayout.astro';
 import Icon from '../components/Icon.astro';
 import PostViews from '../components/PostViews.astro';
 import Author from '../components/Author.astro';
+import ExportPdf from '../components/ExportPdf.astro';
 import { formatDate, tagSlug } from '../lib/content';
 interface Props {
   title: string; description: string; section: string;
@@ -21,7 +22,8 @@ const { title, description, section, headings, date, tags = [], readingTime, slu
       {tags.length > 0 && <div class="article-tags">{tags.map(tag => <a href={`/blog/tags/${tagSlug(tag)}/`} class="tag">{tag}</a>)}</div>}
       {status && <span class:list={['project-status', { 'status-active': status === 'Active' }]}><i></i>{status}</span>}
       <div class="article-title-row"><h1>{title}</h1>{image && <img class="article-thumbnail" src={image} alt="" width="72" height="72" loading="lazy" />}</div><p class="article-description">{description}</p>
-      {(author || date) && <div class="article-meta">{author && <Author name={author} />}{date && <><span><Icon name="calendar" size={14} /><time datetime={date.toISOString()}>{formatDate(date)}</time></span><span><Icon name="clock" size={14} />{readingTime} min read</span></>}{slug && <PostViews slug={slug} track />}</div>}
+      {(author || date || slug) && <div class="article-meta">{author && <Author name={author} />}{date && <><span><Icon name="calendar" size={14} /><time datetime={date.toISOString()}>{formatDate(date)}</time></span><span><Icon name="clock" size={14} />{readingTime} min read</span></>}{slug && <PostViews slug={slug} collection={section === 'Projects' ? 'projects' : 'blog'} track />}</div>}
+      {section === 'Blog Posts' && slug && <ExportPdf slug={slug} />}
       {stack.length > 0 && <div class="project-stack">{stack.map(item => <span>{item}</span>)}</div>}
       {(repository || demo) && <div class="project-actions">{repository && <a href={repository} class="button-secondary" target="_blank" rel="noopener noreferrer"><Icon name="github" size={16} />Source code<Icon name="arrow" size={14} /></a>}{demo && <a href={demo} class="button-secondary" target="_blank" rel="noopener noreferrer">Live demo<Icon name="arrow" size={14} /></a>}</div>}
     </header>

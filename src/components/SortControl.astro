@@ -1,0 +1,15 @@
+---
+import Icon from './Icon.astro';
+interface Props { projects?: boolean; }
+const { projects = false } = Astro.props;
+---
+<label class="sort-control">Sort by
+  <select data-sort aria-label={projects ? 'Sort projects' : 'Sort blog posts'}>
+    <option value="newest">Newest first</option>
+    <option value="oldest">Oldest first</option>
+    <option value="views">Most viewed</option>
+    <option value="title">Title A–Z</option>
+    {projects && <><option value="featured">Featured first</option><option value="status">Status</option></>}
+  </select>
+  <Icon name="chevron" size={12} />
+</label>

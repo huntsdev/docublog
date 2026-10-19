@@ -1,0 +1,17 @@
+---
+import Icon from './Icon.astro';
+interface Props { slug: string; }
+const { slug } = Astro.props;
+const filename = `${slug.replaceAll('/', '-')}.pdf`;
+---
+<div class="article-export-actions">
+  <a class="button-secondary export-pdf-button" data-export-pdf href={`/blog/${slug}.pdf`} download={filename}>
+    <Icon name="download" size={15} />
+    <span>Export PDF</span>
+  </a>
+</div>
+
+<style>
+  .article-export-actions { margin-top: 20px; }
+  .export-pdf-button > span { color: inherit; font-size: inherit; padding: 0; }
+</style>

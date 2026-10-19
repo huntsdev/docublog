@@ -23,6 +23,7 @@ const projects = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
   schema: z.object({
     ...base,
+    date: z.coerce.date().optional(),
     status: z.enum(['Active', 'In progress', 'Archived']).default('In progress'),
     stack: z.array(z.string()).default([]),
     featured: z.boolean().default(false),

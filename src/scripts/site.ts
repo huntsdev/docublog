@@ -1,30 +1,6 @@
 import './image-viewer';
-
-const menuButton = document.querySelector<HTMLButtonElement>('[data-open-menu]');
-const sidebar = document.querySelector<HTMLElement>('#site-sidebar');
-const mobile = matchMedia('(max-width: 700px)');
-
-function setMenu(open: boolean, restoreFocus = true) {
-  document.body.classList.toggle('menu-open', open);
-  menuButton?.setAttribute('aria-expanded', String(open));
-  sidebar?.toggleAttribute('inert', mobile.matches && !open);
-  if (open) sidebar?.querySelector<HTMLButtonElement>('[data-close-menu]')?.focus();
-  else if (restoreFocus) menuButton?.focus();
-}
-menuButton?.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
-document.querySelectorAll('[data-close-menu]').forEach(button => button.addEventListener('click', () => setMenu(false)));
-sidebar?.toggleAttribute('inert', mobile.matches);
-mobile.addEventListener('change', () => setMenu(false, false));
-document.addEventListener('keydown', event => {
-  if (!document.body.classList.contains('menu-open')) return;
-  if (event.key === 'Escape') { event.preventDefault(); setMenu(false); }
-  if (event.key === 'Tab' && sidebar) {
-    const items = [...sidebar.querySelectorAll<HTMLElement>('a, button, summary, [tabindex="0"]')].filter(item => item.getClientRects().length > 0);
-    const first = items[0], last = items[items.length - 1];
-    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
-    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
-  }
-});
+import './sidebar';
+import './listings';
 document.querySelectorAll('[data-open-search]').forEach(button => button.addEventListener('click', () => {
   document.querySelector<HTMLButtonElement>('.search-trigger')?.click();
 }));
@@ -108,55 +84,3 @@ document.querySelectorAll<HTMLButtonElement>('[data-copy-link]').forEach(button 
   setTimeout(() => { if (label) label.textContent = 'Copy page link'; }, 2000);
 }));
 
-document.querySelectorAll<HTMLElement>('[data-blog-listing]').forEach(listing => {
-  const buttons = [...listing.querySelectorAll<HTMLButtonElement>('[data-tag]')];
-  const topicButtons = buttons.filter(button => button.dataset.tag);
-  const topicLimit = Number(listing.dataset.topicLimit) || 5;
-  const topicToggle = listing.querySelector<HTMLButtonElement>('[data-topic-toggle]');
-  let topicsExpanded = false;
-  const list = listing.querySelector<HTMLElement>('[data-post-list]');
-  const wrappers = [...listing.querySelectorAll<HTMLElement>('[data-post-wrapper]')];
-  const sort = listing.querySelector<HTMLSelectElement>('[data-sort]');
-  const params = new URLSearchParams(location.search);
-  const requestedTag = params.get('tag') || listing.dataset.initialTag || '';
-  let selected = buttons.some(button => button.dataset.tag === requestedTag) ? requestedTag : '';
-  function updateTopics() {
-    const visibleTopics = topicButtons.slice(0, topicLimit);
-    const activeTopic = topicButtons.find(button => button.dataset.tag === selected);
-    if (activeTopic && !visibleTopics.includes(activeTopic)) visibleTopics.splice(topicLimit - 1, 1, activeTopic);
-    topicButtons.forEach(button => { button.hidden = !topicsExpanded && !visibleTopics.includes(button); });
-    topicToggle?.setAttribute('aria-expanded', String(topicsExpanded));
-    const label = topicToggle?.querySelector('[data-topic-toggle-label]');
-    if (label) label.textContent = topicsExpanded ? 'Show fewer topics' : 'Show all topics';
-    const extraCount = topicToggle?.querySelector<HTMLElement>('[data-topic-extra-count]');
-    if (extraCount) extraCount.hidden = topicsExpanded;
-  }
-  function update(updateUrl = true) {
-    let total = 0;
-    wrappers.sort((a, b) => {
-      const dates = [a, b].map(wrapper => Number(wrapper.querySelector<HTMLElement>('[data-post]')?.dataset.date));
-      return sort?.value === 'oldest' ? dates[0] - dates[1] : dates[1] - dates[0];
-    }).forEach(wrapper => {
-      const tags: string[] = JSON.parse(wrapper.querySelector<HTMLElement>('[data-post]')?.dataset.tags || '[]');
-      wrapper.hidden = !!selected && !tags.includes(selected);
-      if (!wrapper.hidden) total++;
-      list?.append(wrapper);
-    });
-    buttons.forEach(button => { const active = button.dataset.tag === selected; button.classList.toggle('selected', active); button.setAttribute('aria-pressed', String(active)); });
-    updateTopics();
-    const count = listing.querySelector('[data-result-count]');
-    if (count) count.textContent = `${total} ${total === 1 ? 'post' : 'posts'}${selected ? ` about ${selected}` : ''}`;
-    const empty = listing.querySelector<HTMLElement>('[data-filter-empty]');
-    if (empty) empty.hidden = total > 0;
-    if (updateUrl) {
-      const url = new URL('/blog/', location.origin);
-      if (selected) url.searchParams.set('tag', selected);
-      history.replaceState({}, '', url);
-    }
-  }
-  buttons.forEach(button => button.addEventListener('click', () => { selected = button.dataset.tag || ''; update(); }));
-  topicToggle?.addEventListener('click', () => { topicsExpanded = !topicsExpanded; updateTopics(); });
-  sort?.addEventListener('change', () => update(false));
-  listing.querySelector('[data-clear-filters]')?.addEventListener('click', () => { selected = ''; update(); });
-  update(false);
-});

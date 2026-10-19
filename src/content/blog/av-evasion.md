@@ -81,6 +81,8 @@ These logs are useful in identifying and detection of suspicious PowerShell acti
 
 This research will utilize Operational event log 4104 to compare the visibility of plaintext execution and obfuscated PowerShell scripts.
 
+![Script Block Logging](https://www.techtarget.com/rms/onlineImages/powershell_script_01_mobile.jpg)
+
 ## Real World Applicaiton & AV Evasion
 
 PowerShell obfuscation has been utilized by multiple threat actors in real-world attacks; MITRE ATT&CK documented APT32's use of the Invoke-Obfuscation framework which effectively disguises PowerShell commands. FIN-7 has documented usage of fragmented strings, environment variables, and character substitution in order to complicate and evade detection & analysis of malicious commands (MITRE ATT&CK, 2026).
@@ -163,7 +165,7 @@ The results highlight that obfuscation through encoding, variable, and concatena
 | Plaintext baseline | Success | No alert | Both |
 | Base64 encoding | Success | No alert | Both |
 | String concatenation | Success | No alert | Both |
-| Variable obfuscation | Success | No alert | Invocation only |
+| Variable obfuscation | Success | No alert |  Both |
 | AMSI positive control | Success | Detected | Both |
 
 ### AMSI & Defender Results

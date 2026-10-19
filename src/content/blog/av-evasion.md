@@ -105,10 +105,37 @@ The purpose of this file is to compare functionality and detection results of th
 
 ![Baseline Execution](/assets/images/posts/baseline.png)
 
+The `baseline.ps1` file executed successfully and Microsoft Defender did not generate any detections for this activity.
 
+### Test 2 - Base64 Encoding
 
+The second test used `encoded.ps1`, which utilized Base64 encoded strings that were later decoded during execution. 
 
-### Pull Event Viewer Logs
+![Base 64 Execution](/assets/images/posts/obfuscation.png)
+
+The `encoded.ps1` file executed successfully and Microsoft Defender did not generate any detections for this activity.
+
+### Test 3 - String Concatenation
+
+The `concatenation.ps1` script demonstrates joining seperate strings into a complete command at the point of script execution.
+
+This script executed successfully and did not generate any Defender detections.
+
+### Test 4 - Variable Obfuscation
+
+The fourth and final test utilized `variables.ps1`, which used vague variable names/identifiers such as `$a`, `$b`, etc. 
+
+The script executed successfully and did not generate any Defender related alerts.
+
+### PowerShell Script Block Logging
+
+Following execution of the test scripts, PowerShell Script Block Logging events 4104 were reviewed through Event Viewer; event 4104 and PowerShell terminal queries of the Event Viewer. 
+
+During initial review of the Event Viewer Operational Event ID 4104 logs, I did find logs of execution of each individual script, however only `encoded.ps1` was logged with the full script contents, whereas other logs just showed the invocation of `.\encoded.ps1`, `.variables.ps1`. 
+
+![Event Viewer](/assets/images/posts/eventviewer-encodedps1.png)
+
+I was able to pull the full script block event logs for the remanining scripts however through the below PowerShell script. 
 
 ```powershell
 Get-WinEvent -FilterHashtable @{
@@ -121,3 +148,57 @@ Get-WinEvent -FilterHashtable @{
     Select-Object TimeCreated, Message |
     Format-List
 ```
+
+The `Get-WinEvent` PowerShell query effectively pulled full script block logging events for all script executions across all test scripts.
+
+![Baseline-Terminal](/assets/images/posts/terminal-baselineEV.png)
+![Encoded-Terminal](/assets/images/posts/terminal-encodedEV.png)
+![Concatenation-Terminal](/assets/images/posts/terminal-concatenationEV.png)
+![Variables-Terminal](/assets/images/posts/terminal-variablesEV.png)
+
+The results highlight that obfuscation through encoding, variable, and concatenation did not inherently prevent execution of these benign scripts, nor did it prevent logging of the core script content.
+
+| Test | Execution | Defender detection | Event ID 4104 |
+|---|---|---|---|
+| Plaintext baseline | Success | No alert | Both |
+| Base64 encoding | Success | No alert | Both |
+| String concatenation | Success | No alert | Both |
+| Variable obfuscation | Success | No alert | Invocation only |
+| AMSI positive control | Success | Detected | Both |
+
+### AMSI & Defender Results
+
+An AMSI test was conducted using Microsoft's official script for AMSI detection testing, through executing the following script we can confirm Defender is effectively scanning for threats and reporting correctly:
+
+```powershell
+$testString = "AMSI Test Sample: " + "7e72c3ce-861b-4339-8740-0ac1484c1386"
+Invoke-Expression $testString
+```
+![AMSI Check](/assets/images/posts/AMSI-check.png)
+
+And verifying any existing Defender detections throughout the full testing process:
+
+![Defender Threats](/assets/images/posts/defender-threat.png)
+
+## Results and Analysis
+
+From the evidence we can conclude that the only Defender detection generated throughout execution of the test obfuscation scripts and AMSI check was the AMSI check itself, Defender did not detect or alert on any of the obfuscated command execution. Though Defender did not provide any initial detections; full visibility into script content was successful through script block logging which can provide additional detection and prevention controls, with that being said this experiment does not fully document a successful evasion.
+
+## References
+
+Bohannon, D., & Holmes, L. (2017). *Revoke-Obfuscation: PowerShell obfuscation detection using science* [Conference white paper]. Black Hat USA 2017. https://blackhat.com/docs/us-17/thursday/us-17-Bohannon-Revoke-Obfuscation-PowerShell-Obfuscation-Detection-And%20Evasion-Using-Science-wp.pdf
+
+Bohannon, D., & Holmes, L. (2017, July 28). *Revoke-Obfuscation: PowerShell obfuscation detection using science*. Mandiant. https://cloud.google.com/blog/topics/threat-intelligence/revoke-obfuscation-powershell/
+
+Microsoft. (2024, July 23). *about_PowerShell_exe*. Microsoft Learn. https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_powershell_exe?view=powershell-5.1
+
+Microsoft. (2025, September 30). *about_Logging*. Microsoft Learn. https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_logging
+
+Microsoft. (n.d.). *about_Join*. Microsoft Learn. https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_join?view=powershell-5.1
+
+Microsoft. (n.d.). *Anti-malware Scan Interface (AMSI) integration with Microsoft Defender Antivirus*. Microsoft Learn. https://learn.microsoft.com/en-us/defender-endpoint/amsi-on-mdav
+
+Microsoft. (n.d.). *AMSI demonstrations with Microsoft Defender for Endpoint*. Microsoft Learn. https://learn.microsoft.com/en-us/defender-endpoint/mde-demonstration-amsi
+
+MITRE ATT&CK. (2026, May 12). *Obfuscated files or information: Command obfuscation (T1027.010)*. https://attack.mitre.org/techniques/T1027/010/
+
